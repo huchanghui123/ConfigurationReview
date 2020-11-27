@@ -5,26 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview"
         mc:Ignorable="d"
-        Title="Ootom Review V1.00" Height="800" Width="800">
+        Title="Ootom Review V1.00" Height="800" Width="850" Closing="OnClosing">
     <Window.Resources>
-        <Style TargetType="{x:Type TextBlock }">
+        <Style TargetType="{x:Type TextBlock }" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontFamily" Value="Comic Sans MS"/>
-            <Setter Property="FontSize" Value="16"/>
-        </Style>
+            <Setter Property="FontSize" Value="14"/>
+        </Style> 
         <Style TargetType="{x:Type TextBox }">
             <Setter Property="FontFamily" Value="Comic Sans MS"/>
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style TargetType="{x:Type Button }">
             <Setter Property="FontFamily" Value="Comic Sans MS"/>
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="14"/>
         </Style>
-        <Style TargetType="{x:Type ListView }">
+
+        <Style TargetType="{x:Type ListViewItem}">
             <Setter Property="FontFamily" Value="Comic Sans MS"/>
-            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Check}" Value="error">
+                    <Setter Property="Foreground" Value="Red" />
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
-        <Style TargetType="{x:Type GridViewColumnHeader}" x:Key="myMyHeaderStyle">
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="FontSize" Value="12"/>
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
     </Window.Resources>
@@ -38,23 +45,23 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Canvas Grid.Column="0" Grid.ColumnSpan="1">
-            <StackPanel Canvas.Left="30" Canvas.Top="5" >
-                <TextBlock Text="操作系统" />
-                <TextBlock Text="系统类型" />
-                <TextBlock Text="系统语言" />
-                <TextBlock Text="CPU" />
-                <TextBlock Text="主板" />
-                <TextBlock Text="BIOS" />
-                <TextBlock Text="CPU温度" />
-                <TextBlock Text="内存信息" Margin="0,130,0,0" />
-                <TextBlock Text="磁盘信息" Margin="0,80,0,0" />
-                <TextBlock Text="网卡信息" Margin="0,80,0,0" />
-                <TextBlock Text="NTP同步" Margin="0,120,0,0" />
-                <TextBlock Text="计算机名称" Margin="0,15,0,0"/>
+            <StackPanel Canvas.Left="10" Canvas.Top="5" >
+                <TextBlock Text="Windows edition" />
+                <TextBlock Text="System type" />
+                <TextBlock Text="System language" />
+                <TextBlock Text="Processor" />
+                <TextBlock Text="Motherboard" />
+                <TextBlock Text="BIOS type" />
+                <TextBlock Text="CPU temperature" />
+                <TextBlock Text="Memory info" Margin="0,130,0,0" />
+                <TextBlock Text="Storage info" Margin="0,80,0,0" />
+                <TextBlock Text="Network info" Margin="0,80,0,0" />
+                <TextBlock Text="NTP synchronize" Margin="0,130,0,0" />
+                <TextBlock Text="Computer name" Margin="0,15,0,0"/>
             </StackPanel>
         </Canvas>
         <Canvas Grid.Column="1" Grid.ColumnSpan="5">
-            <StackPanel Canvas.Top="5" Width="650" >
+            <StackPanel Canvas.Left="0" Canvas.Top="5" Width="692" >
                 <TextBlock x:Name="os" Text="Loading..." />
                 <TextBlock x:Name="os_type" Text="Loading..."/>
                 <TextBlock x:Name="os_language" Text="Loading..."/>
@@ -65,60 +72,66 @@
                 <ListView x:Name="temperatureList" Height="150" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="当前值" Width="120" DisplayMemberBinding="{Binding Path=Value}" />
-                            <GridViewColumn Header="最小值" Width="120" DisplayMemberBinding="{Binding Path=MinValue}" />
-                            <GridViewColumn Header="最大值" Width="120" DisplayMemberBinding="{Binding Path=MaxValue}" />
+                            <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Path=Name}" />
+                            <GridViewColumn Header="Value" Width="120" DisplayMemberBinding="{Binding Path=Value}" />
+                            <GridViewColumn Header="MinValue" Width="120" DisplayMemberBinding="{Binding Path=MinValue}" />
+                            <GridViewColumn Header="MaxValue" Width="120" DisplayMemberBinding="{Binding Path=MaxValue}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
 
-                <ListView x:Name="memList" Height="100" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                <ListView x:Name="mem_List" Height="100" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="内存型号" Width="120" DisplayMemberBinding="{Binding Path=Name}" />
-                            <GridViewColumn Header="频率" Width="120" DisplayMemberBinding="{Binding Path=Speed}" />
-                            <GridViewColumn Header="类型" Width="120" DisplayMemberBinding="{Binding Path=Type}" />
-                            <GridViewColumn Header="大小" Width="120" DisplayMemberBinding="{Binding Path=Size}" />
+                            <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Path=Name}" />
+                            <GridViewColumn Header="Speed" Width="120" DisplayMemberBinding="{Binding Path=Speed}" />
+                            <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding Path=Type}" />
+                            <GridViewColumn Header="Size" Width="120" DisplayMemberBinding="{Binding Path=Size}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
 
-                <ListView x:Name="diskList" Height="100" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                <ListView x:Name="disk_List" Height="100" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="磁盘型号" Width="120" DisplayMemberBinding="{Binding Path=Name}" />
-                            <GridViewColumn Header="类型" Width="120" DisplayMemberBinding="{Binding Path=Type}" />
-                            <GridViewColumn Header="大小" Width="120" DisplayMemberBinding="{Binding Path=Size}" />
+                            <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Path=Name}" />
+                            <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding Path=Type}" />
+                            <GridViewColumn Header="Size" Width="120" DisplayMemberBinding="{Binding Path=Size}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
 
-                <ListView x:Name="netList" Height="150" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                <ListView x:Name="net_List" Height="150" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="      适配器" Width="230" HeaderContainerStyle="{StaticResource myMyHeaderStyle}" DisplayMemberBinding="{Binding Path=Name}" />
-                            <GridViewColumn Header="MAC地址" Width="120" DisplayMemberBinding="{Binding Path=Mac}" />
-                            <GridViewColumn Header="IP地址" Width="120" DisplayMemberBinding="{Binding Path=Ip}" />
-                            <GridViewColumn Header="连接状态" Width="80" DisplayMemberBinding="{Binding Path=Status}" />
-                            <GridViewColumn Header="网卡类型" Width="100" DisplayMemberBinding="{Binding Path=Type}" />
+                            <GridViewColumn Header="Adapter Description" Width="260" DisplayMemberBinding="{Binding Path=Adapter}" />
+                            <GridViewColumn Header="MAC Address" Width="150" DisplayMemberBinding="{Binding Path=Mac}" />
+                            <GridViewColumn Header="IP Address" Width="120" DisplayMemberBinding="{Binding Path=Ip}" />
+                            <GridViewColumn Header="Status" Width="60" DisplayMemberBinding="{Binding Path=Status}" />
+                            <GridViewColumn Header="Type" Width="80" DisplayMemberBinding="{Binding Path=Type}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
 
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="NTP地址：" />
+                    <TextBlock Text="NTP Address：" />
                     <TextBox Text="192.168.1.1" Width="120"/>
-                    <Button Content="更新时间" Margin="10,0,0,0"/>
+                    <Button Content="Update time" Margin="20,0,0,0"/>
+                    <TextBlock x:Name="time" Text="System time" Margin="20,0,0,0"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="当前名称：" />
-                    <TextBlock Text="Loading..." />
-                    <TextBox Text="点击生成" Width="120" Margin="10,0,0,0"/>
-                    <Button Content="生成名称" Margin="10,0,0,0"/>
-                    <Button Content="更新名称" Margin="10,0,0,0"/>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="Name：" />
+                    <TextBlock x:Name="os_name" Text="Loading..." />
+                    <TextBox Text="Click generate" Width="120" Margin="20,0,0,0"/>
+                    <Button Content="Generate name" Margin="20,0,0,0"/>
+                    <Button Content="Update name" Margin="20,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <Button Content="Save configuration" />
                 </StackPanel>
 
             </StackPanel>
+            <Button Content="Button" Canvas.Left="695" Canvas.Top="765" Width="75"/>
         </Canvas>
 
     </Grid>
