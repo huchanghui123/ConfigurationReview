@@ -2,6 +2,7 @@
 using QotomReview.Tool;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace QotomReview
     public partial class MainWindow : Window
     {
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
-
+        private static string newName = "QT";
         public MainWindow()
         {
             InitializeComponent();
@@ -62,7 +63,7 @@ namespace QotomReview
                 os_type.Text = systemType;
                 cpu.Text = cpuName;
                 os_language.Text = language;
-                os_name.Text = account;
+                input_name.Text = account;
                 mb.Text = boardType;
                 bios.Text = biosName;
                 
@@ -176,6 +177,41 @@ namespace QotomReview
             };
             //调用立即设置新日期和时间
             Win32SetSystemTime(ref st);
+        }
+
+        private void GenerateNameClick(object sender, RoutedEventArgs e)
+        {
+            Random r = new Random();
+            int num = r.Next(0,999);
+            newName = "QT"+DateTime.Now.ToShortDateString().Replace("/","")
+                + DateTime.Now.ToShortTimeString().Replace(":","") + num;
+            input_name.Text = newName;
+        }
+
+        private void UpdateNameClick(object sender, RoutedEventArgs e)
+        {
+            newName = input_name.Text;
+            if (newName.Length == 0)
+            {
+                return;
+            }
+            // Create a new process
+            ProcessStartInfo process = new ProcessStartInfo
+            {
+                // set name of process to "WMIC.exe"
+                FileName = "WMIC.exe",
+                // pass rename PC command as argument
+                Arguments = "computersystem where caption='" + 
+                    System.Environment.MachineName + 
+                    "' rename " + newName
+            };
+            // Run the external process & wait for it to finish
+            using (Process proc = Process.Start(process))
+            {
+                proc.WaitForExit();
+                // print the status of command
+                Console.WriteLine("Exit code = " + proc.ExitCode);
+            }
         }
     }
 }

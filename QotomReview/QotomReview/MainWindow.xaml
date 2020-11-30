@@ -114,17 +114,17 @@
                 </ListView>
 
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="NTP Address：" />
+                    <TextBlock Text="NTP server：" />
                     <TextBox x:Name="ntp_server" Text="time.windows.com" Width="150"/>
                     <Button Content="Update time" Click="UpdateTimeClick" Margin="20,0,0,0"/>
                     <TextBlock x:Name="time" Text="System time" Margin="20,0,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                    <TextBlock Text="Name：" />
-                    <TextBlock x:Name="os_name" Text="Loading..." />
-                    <TextBox Text="Click generate" Width="120" Margin="20,0,0,0"/>
-                    <Button Content="Generate name" Margin="20,0,0,0"/>
-                    <Button Content="Update name" Margin="20,0,0,0"/>
+                    <TextBlock Text="Computer name：" />
+                    <TextBox x:Name="input_name" Text="Loading..." Width="150" />
+                    <Button Content="Generate name" Click="GenerateNameClick" Margin="20,0,0,0"/>
+                    <Button Content="Update name" Click="UpdateNameClick" Margin="20,0,0,0"/>
+                    <TextBlock Text=" (need to restart)" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                     <Button Content="Save configuration" />
