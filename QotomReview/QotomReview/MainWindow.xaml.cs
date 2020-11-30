@@ -2,6 +2,7 @@
 using QotomReview.Tool;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -104,6 +105,77 @@ namespace QotomReview
             {
                 dispatcherTimer.Stop();
             }
+        }
+
+        private void UpdateTimeClick(object sender, RoutedEventArgs e)
+        {
+            Thread twt = new Thread(TimeWorkThread)
+            {
+                IsBackground = true
+            };
+            twt.Start();
+        }
+
+        void TimeWorkThread()
+        {
+            string ntp_address = String.Empty;
+            this.Dispatcher.Invoke((Action)delegate ()
+            {
+                ntp_address = ntp_server.Text;
+                dispatcherTimer.Stop();
+                time.Text = "synchronizationing...";
+            });
+                 
+            try
+            {
+                DateTime dt = Computer.GetNetworkTime(ntp_address);
+                Console.WriteLine("UpdateTimeClick......" + dt.ToString());
+                SetLocalMachineTime(dt);
+                dispatcherTimer.Start();
+            }
+            catch (Exception)
+            {
+                this.Dispatcher.Invoke((Action)delegate ()
+                {
+                    time.Text = "synchronizationing failed,check the network!";
+                });
+            }
+        }
+
+        //修改本地系统时间
+        public struct SYSTEMTIME
+        {
+            public ushort Year;
+            public ushort Month;
+            public ushort DayOfWeek;
+            public ushort Day;
+            public ushort Hour;
+            public ushort Minute;
+            public ushort Second;
+            public ushort Millisecond;
+        };
+
+        [DllImport("kernel32.dll", EntryPoint = "GetSystemTime", SetLastError = true)]
+        public extern static void Win32GetSystemTime(ref SYSTEMTIME sysTime);
+
+        [DllImport("kernel32.dll", EntryPoint = "SetSystemTime", SetLastError = true)]
+        public extern static bool Win32SetSystemTime(ref SYSTEMTIME sysTime);
+
+        public static void SetLocalMachineTime(DateTime dt)
+        {
+            //转换System.DateTime到SYSTEMTIME
+            SYSTEMTIME st = new SYSTEMTIME
+            {
+                Year = (ushort)dt.Year,
+                Month = (ushort)dt.Month,
+                Day = (ushort)dt.Day,
+                Hour = (ushort)dt.Hour,
+                Minute = (ushort)dt.Minute,
+                Second = (ushort)dt.Second,
+                Millisecond = (ushort)dt.Millisecond
+            };
+            //调用立即设置新日期和时间
+            Win32SetSystemTime(ref st);
         }
     }
 }
