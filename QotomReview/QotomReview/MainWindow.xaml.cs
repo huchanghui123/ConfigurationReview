@@ -1,7 +1,9 @@
 ﻿using QotomReview.model;
 using QotomReview.Tool;
+using QotomReview.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -15,30 +17,49 @@ namespace QotomReview
     /// </summary>
     public partial class MainWindow : Window
     {
-        DispatcherTimer dispatcherTimer = new DispatcherTimer();
-        private static string newName = "QT";
+        private DispatcherTimer systemTimeTimer = new DispatcherTimer() {
+            IsEnabled = true
+        };
+        private DispatcherTimer cpuTemperatureTimer = new DispatcherTimer() {
+            IsEnabled = true
+        };
+
+        private CpuTemperatureReader cpuCelsius;
+        private List<SensorData> sensorList;
+        private ObservableCollection<SensorData> baseDataList 
+            = new ObservableCollection<SensorData>();
+
+        private static string newName = String.Empty;
+        private Thread it;
+        private Thread nt;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            Thread t = new Thread(WorkThread)
+            it = new Thread(InfoThread)
             {
                 IsBackground = true
             };
-            t.Start();
+            it.Start();
 
-            Thread t1 = new Thread(WorkThread2)
+            nt = new Thread(NetThread)
             {
                 IsBackground = true
             };
-            t1.Start();
+            nt.Start();
 
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-            dispatcherTimer.Start();
+            systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
+            systemTimeTimer.Interval = TimeSpan.FromSeconds(1);
+            systemTimeTimer.Start();
+
+            cpuCelsius = new CpuTemperatureReader();
+            cpuTemperatureTimer.Tick += new EventHandler(CpuTemperatureTimerTick);
+            cpuTemperatureTimer.Interval = TimeSpan.FromSeconds(2);
+            cpuTemperatureTimer.Start();
         }
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        private void SystemTimeTimerTick(object sender, EventArgs e)
         {
             this.Dispatcher.Invoke((Action)delegate ()
             {
@@ -46,7 +67,37 @@ namespace QotomReview
             });
         }
 
-        void WorkThread()
+        private void CpuTemperatureTimerTick(object sender, EventArgs e)
+        {
+            Console.WriteLine("CpuTemperatureTimerTick.....22");
+            sensorList = cpuCelsius.GetTemperaturesInCelsius();
+            if(sensorList.Count > 0)
+            {
+                if(temperatureList.Items.Count == 0)
+                {
+                    foreach(SensorData data in sensorList)
+                    {
+                        baseDataList.Add(data);
+                    }
+                    this.Dispatcher.Invoke((Action)delegate ()
+                    {
+                        temperatureList.ItemsSource = baseDataList;
+                    });
+                }
+                else
+                {
+                    for (int i = 0; i < sensorList.Count; i++)
+                    {
+                        this.Dispatcher.Invoke((Action)delegate ()
+                        {
+                            baseDataList[i] = sensorList[i];
+                        });
+                    }
+                }
+            }
+        }
+
+        void InfoThread()
         {
             string systemVer = Computer.GetSystemVersion();
             string systemType = Computer.GetSystemType("SystemType");
@@ -70,7 +121,7 @@ namespace QotomReview
             });
         }
 
-        void WorkThread2()
+        void NetThread()
         {
             List<BaseData> memList = Computer.GetMemoryInfo();
             if (memList != null && memList.Count > 0)
@@ -99,15 +150,6 @@ namespace QotomReview
             }
         }
 
-        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Console.WriteLine("Window OnClosing!!!");
-            if(dispatcherTimer.IsEnabled)
-            {
-                dispatcherTimer.Stop();
-            }
-        }
-
         private void UpdateTimeClick(object sender, RoutedEventArgs e)
         {
             Thread twt = new Thread(TimeWorkThread)
@@ -123,7 +165,7 @@ namespace QotomReview
             this.Dispatcher.Invoke((Action)delegate ()
             {
                 ntp_address = ntp_server.Text;
-                dispatcherTimer.Stop();
+                systemTimeTimer.Stop();
                 time.Text = "synchronizationing...";
             });
                  
@@ -132,7 +174,7 @@ namespace QotomReview
                 DateTime dt = Computer.GetNetworkTime(ntp_address);
                 Console.WriteLine("UpdateTimeClick......" + dt.ToString());
                 SetLocalMachineTime(dt);
-                dispatcherTimer.Start();
+                systemTimeTimer.Start();
             }
             catch (Exception)
             {
@@ -211,6 +253,23 @@ namespace QotomReview
                 proc.WaitForExit();
                 // print the status of command
                 Console.WriteLine("Exit code = " + proc.ExitCode);
+            }
+        }
+
+        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Console.WriteLine("Window OnClosing!!!");
+            if (systemTimeTimer.IsEnabled)
+            {
+                systemTimeTimer.Stop();
+            }
+            if (cpuTemperatureTimer.IsEnabled)
+            {
+                cpuTemperatureTimer.Stop();
+            }
+            if(cpuCelsius != null)
+            {
+                cpuCelsius.Dispose();
             }
         }
     }
