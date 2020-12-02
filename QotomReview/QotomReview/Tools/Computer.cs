@@ -151,7 +151,7 @@ namespace QotomReview.Tool
                     capacity = Convert.ToDouble(m.Properties["Capacity"].Value);
                     size = (capacity / 1024 / 1024 / 1024).ToString("f1") + " GB";
                     BaseData bd = new BaseData(manufacturer, type, size, speed);
-                    bd.Check = "error";
+                    //bd.Check = "error";
                     mem_list.Add(bd);
                 }
                 mc = null;

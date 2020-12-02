@@ -38,7 +38,6 @@ namespace QotomReview.Tools
                         {
                             if (sensor.SensorType == SensorType.Temperature && sensor.Value.HasValue)
                             {
-
                                 sensorList.Add(new SensorData(sensor.Name, 
                                     sensor.Value.Value + " °C",
                                     sensor.Min.Value + " °C", 

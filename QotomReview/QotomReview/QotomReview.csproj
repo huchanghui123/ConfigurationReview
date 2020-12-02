@@ -63,10 +63,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="model\BaseData.cs" />
+    <Compile Include="model\ConfigData.cs" />
     <Compile Include="model\NetWorkData.cs" />
     <Compile Include="model\SensorData.cs" />
     <Compile Include="Tools\Computer.cs" />
     <Compile Include="Tools\CpuTemperatureReader.cs" />
+    <Compile Include="Tools\SaveXml.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
