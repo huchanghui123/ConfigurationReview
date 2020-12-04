@@ -123,7 +123,7 @@ namespace QotomReview.Tools
                 {
                     XmlElement xe = (XmlElement)xn1;
                     int count = xe.ChildNodes.Count;
-                    Console.WriteLine(xe.Name + " " + count + " ");
+                    //Console.WriteLine(xe.Name + " " + count + " ");
 
                     if (xe.Name.Equals("OSVer"))
                     {
@@ -155,7 +155,7 @@ namespace QotomReview.Tools
                         for (int i = 0; i < count; i++)
                         {
                             temp[i] = xe.ChildNodes.Item(i).InnerText;
-                            Console.WriteLine(xe.Name + ":" + temp[i]);
+                            //Console.WriteLine(xe.Name + ":" + temp[i]);
                         }
 
                         if (xe.Name.Equals("Memory"))
