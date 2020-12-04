@@ -7,6 +7,7 @@ using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Windows;
 
 namespace QotomReview.Tool
 {
@@ -138,6 +139,7 @@ namespace QotomReview.Tool
                 string manufacturer = String.Empty;
                 string type = String.Empty;
                 string speed = String.Empty;
+                int minVoltage = 0;
                 foreach (ManagementObject m in moc)
                 {
                     manufacturer = m.Properties["Manufacturer"].Value.ToString();
@@ -147,12 +149,24 @@ namespace QotomReview.Tool
                         manufacturer = "Kimtigo";
                     }
                     speed = m.Properties["Speed"].Value.ToString() + " MHz";
-                    type = m.Properties["MemoryType"].Value.ToString();
+                    //type = m.Properties["MemoryType"].Value.ToString();
+                    try
+                    {
+                        minVoltage = Convert.ToInt32(m.Properties["MinVoltage"].Value);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    if (minVoltage >= 1350)
+                        type = "DDR3";
+                    else
+                        type = "DDR4";
+                    
                     capacity = Convert.ToDouble(m.Properties["Capacity"].Value);
                     size = (capacity / 1024 / 1024 / 1024).ToString("f1") + " GB";
                     BaseData bd = new BaseData(manufacturer, type, size, speed);
-                    //bd.Check = "error";
                     mem_list.Add(bd);
+                    
                 }
                 mc = null;
                 moc.Dispose();
@@ -179,14 +193,22 @@ namespace QotomReview.Tool
                 string type = String.Empty;
                 foreach (ManagementObject m in moc)
                 {
-                    if (m.Properties["Size"].Value != null)
+                    if(m.Properties["InterfaceType"].Value.ToString().Equals("USB"))
                     {
-                        name = m.Properties["Caption"].Value.ToString();
-                        type = m.Properties["InterfaceType"].Value.ToString();
-                        disksize = Convert.ToDouble(m.Properties["Size"].Value);
-                        size = (disksize / 1024 / 1024 / 1024).ToString("f1") + " GB";
+                        continue;
                     }
-                    disk_list.Add(new BaseData(name, type, size));
+                    else
+                    {
+                        if (m.Properties["Size"].Value != null)
+                        {
+                            name = m.Properties["Caption"].Value.ToString();
+                            type = m.Properties["InterfaceType"].Value.ToString();
+                            disksize = Convert.ToDouble(m.Properties["Size"].Value);
+                            size = (disksize / 1024 / 1024 / 1024).ToString("f1") + " GB";
+                        }
+                        disk_list.Add(new BaseData(name, type, size));
+                    }
+                    
                 }
                 mc = null;
                 moc.Dispose();

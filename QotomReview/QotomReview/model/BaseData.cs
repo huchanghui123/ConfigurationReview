@@ -27,5 +27,10 @@ namespace QotomReview.model
         {
             Speed = speed;
         }
+
+        public override string ToString()
+        {
+            return $"{{{nameof(Name)}={Name}, {nameof(Type)}={Type}, {nameof(Size)}={Size}, {nameof(Speed)}={Speed}, {nameof(Check)}={Check}}}";
+        }
     }
 }

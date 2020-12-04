@@ -61,11 +61,14 @@ namespace QotomReview
                     else
                     {
                         save_config.Text = "读取配置成功!";
+                        save_config.Foreground = Brushes.Black;
                     }
                 }
                 else
                 {
                     compared = false;
+                    save_config.Text = "找不到配置!";
+                    save_config.Foreground = Brushes.Red;
                 }
             }
 
@@ -208,11 +211,19 @@ namespace QotomReview
                     int j = 0;
                     foreach (BaseData data in memList)
                     {
-                        if(!old_mem[j].Equals(mem[j]))
+                        if (old_mem.Length != memList.Count)
                         {
                             data.Check = "error";
                         }
-                        j++;
+                        else
+                        {
+                            if (!old_mem[j].Equals(mem[j]))
+                            {
+                                data.Check = "error";
+                            }
+                            j++;
+                        }
+                        
                         newMemList.Add(data);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
@@ -248,11 +259,19 @@ namespace QotomReview
                     int j = 0;
                     foreach (BaseData data in diskList)
                     {
-                        if (!old_storage[j].Equals(disk[j]))
+                        if (old_storage.Length != diskList.Count)
                         {
                             data.Check = "error";
                         }
-                        j++;
+                        else
+                        {
+                            if (!old_storage[j].Equals(disk[j]))
+                            {
+                                data.Check = "error";
+                            }
+                            j++;
+                        }
+                        
                         newDiskList.Add(data);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
@@ -288,11 +307,19 @@ namespace QotomReview
                     int j = 0;
                     foreach (NetWorkData data in netList)
                     {
-                        if (!old_network[j].Equals(net[j]))
+                        if (old_network.Length != netList.Count)
                         {
                             data.Check = "error";
                         }
-                        j++;
+                        else
+                        {
+                            if (!old_network[j].Equals(net[j]))
+                            {
+                                data.Check = "error";
+                            }
+                            j++;
+                        }
+                        
                         newNetList.Add(data);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
@@ -421,11 +448,11 @@ namespace QotomReview
             try
             {
                 SaveXml.SaveConfigurationToXml(config, configPath);
-                save_config.Text = "Save Configuration success!";
+                save_config.Text = "保存当前配置成功!";
             }
             catch (Exception)
             {
-                save_config.Text = "Save Configuration failed!";
+                save_config.Text = "保存当前配置失败!";
                 save_config.Foreground = Brushes.Red;
             }
         }

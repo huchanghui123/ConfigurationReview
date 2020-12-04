@@ -43,30 +43,61 @@ namespace QotomReview.Tools
 
             XmlElement memory = doc.CreateElement("Memory");
             config.AppendChild(memory);
-            for(int i=0; i < data.Memory.Length; i++)
+            if(data.Memory != null && data.Memory.Length >= 1)
             {
-                XmlElement mem = doc.CreateElement("Name");
-                mem.InnerText = data.Memory[i];
+                for (int i = 0; i < data.Memory.Length; i++)
+                {
+                    XmlElement mem = doc.CreateElement("Value");
+                    mem.InnerText = data.Memory[i];
+                    memory.AppendChild(mem);
+                }
+            }
+            else
+            {
+                XmlElement mem = doc.CreateElement("Value");
+                mem.InnerText = "unknown";
                 memory.AppendChild(mem);
             }
+            
 
             XmlElement storage = doc.CreateElement("Storage");
             config.AppendChild(storage);
-            for (int i = 0; i < data.Storage.Length; i++)
+            if (data.Storage != null && data.Storage.Length >= 1)
             {
-                XmlElement disk = doc.CreateElement("Name");
-                disk.InnerText = data.Storage[i];
+                for (int i = 0; i < data.Storage.Length; i++)
+                {
+                    XmlElement disk = doc.CreateElement("Value");
+                    disk.InnerText = data.Storage[i];
+                    storage.AppendChild(disk);
+                }
+            }
+            else
+            {
+                XmlElement disk = doc.CreateElement("Value");
+                disk.InnerText = "unknown";
                 storage.AppendChild(disk);
             }
 
+                
+
             XmlElement network = doc.CreateElement("Network");
             config.AppendChild(network);
-            for (int i = 0; i < data.Network.Length; i++)
+            if(data.Network != null && data.Network.Length >= 1)
+            {
+                for (int i = 0; i < data.Network.Length; i++)
+                {
+                    XmlElement net = doc.CreateElement("Adapter");
+                    net.InnerText = data.Network[i];
+                    network.AppendChild(net);
+                }
+            }
+            else
             {
                 XmlElement net = doc.CreateElement("Adapter");
-                net.InnerText = data.Network[i];
+                net.InnerText = "unknown";
                 network.AppendChild(net);
             }
+            
 
             doc.Save(path);
         }
@@ -92,16 +123,42 @@ namespace QotomReview.Tools
                 {
                     XmlElement xe = (XmlElement)xn1;
                     int count = xe.ChildNodes.Count;
-                    //Console.WriteLine(xe.Name + " " + count + " ");
-                    if(count > 1)
+                    Console.WriteLine(xe.Name + " " + count + " ");
+
+                    if (xe.Name.Equals("OSVer"))
+                    {
+                        config.OSVer = xe.InnerText;
+                    }
+                    else if(xe.Name.Equals("OSType"))
+                    {
+                        config.OSType = xe.InnerText;
+                    }
+                    else if (xe.Name.Equals("Language"))
+                    {
+                        config.Language = xe.InnerText;
+                    }
+                    else if (xe.Name.Equals("Processor"))
+                    {
+                        config.Processor = xe.InnerText;
+                    }
+                    else if (xe.Name.Equals("Motherboard"))
+                    {
+                        config.Motherboard = xe.InnerText;
+                    }
+                    else if (xe.Name.Equals("BIOS"))
+                    {
+                        config.BIOS = xe.InnerText;
+                    }
+                    else
                     {
                         string[] temp = new string[count];
                         for (int i = 0; i < count; i++)
                         {
-                            //Console.WriteLine(xe.ChildNodes.Item(i).InnerText);
                             temp[i] = xe.ChildNodes.Item(i).InnerText;
+                            Console.WriteLine(xe.Name + ":" + temp[i]);
                         }
-                        if(xe.Name.Equals("Memory"))
+
+                        if (xe.Name.Equals("Memory"))
                         {
                             config.Memory = temp;
                         }
@@ -113,35 +170,7 @@ namespace QotomReview.Tools
                         {
                             config.Network = temp;
                         }
-                    }
-                    else
-                    {
-                        if (xe.Name.Equals("OSVer"))
-                        {
-                            config.OSVer = xe.InnerText;
                         }
-                        else if(xe.Name.Equals("OSType"))
-                        {
-                            config.OSType = xe.InnerText;
-                        }
-                        else if (xe.Name.Equals("Language"))
-                        {
-                            config.Language = xe.InnerText;
-                        }
-                        else if (xe.Name.Equals("Processor"))
-                        {
-                            config.Processor = xe.InnerText;
-                        }
-                        else if (xe.Name.Equals("Motherboard"))
-                        {
-                            config.Motherboard = xe.InnerText;
-                        }
-                        else if (xe.Name.Equals("BIOS"))
-                        {
-                            config.BIOS = xe.InnerText;
-                        }
-                    }
-                    
                 }
             }
             catch (Exception )
