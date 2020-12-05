@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview"
         mc:Ignorable="d"
-        Title="Ootom Review V1.00" Height="800" Width="950" Closing="OnClosing">
+        Title="Ootom Review V1.00" Height="800" Width="950"
+        Closing="OnClosing" ResizeMode="CanMinimize">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock }" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Height" Value="22"/>
-        </Style> 
+        </Style>
         <Style TargetType="{x:Type TextBox }">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
             <Setter Property="FontSize" Value="14"/>
@@ -57,7 +58,7 @@
                 <TextBlock Text="BIOS版本:" />
                 <TextBlock Text="CPU温度:" />
                 <TextBlock Text="内存信息:" Margin="0,140,0,0" />
-                <TextBlock Text="存储信息:" Margin="0,80,0,0" />
+                <TextBlock Text="存储信息:" Margin="0,55,0,0" />
                 <TextBlock Text="网络信息:" Margin="0,80,0,0" />
                 <TextBlock Text="同步时钟:" Margin="0,135,0,0" />
                 <TextBlock Text="计算机名:" Margin="0,12,0,0"/>
@@ -116,25 +117,42 @@
                     </ListView.View>
                 </ListView>
 
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                    <TextBlock Text="NTP 地址:" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="530" Margin="0,5,0,0">
+                    <TextBlock Text="服务器地址:" />
                     <TextBox x:Name="ntp_server" Text="time.windows.com" Width="150" Margin="5,0,0,0"/>
-                    <Button Content="同步" Width="50" Click="UpdateTimeClick" Margin="20,0,0,0"/>
-                    <TextBlock x:Name="time" Text="本地时间" Margin="20,0,0,0" />
+                    <Button x:Name="update_time" Content="同步" Width="50" Click="UpdateTimeClick" Margin="20,0,0,0"/>
+                    <TextBlock x:Name="local_time" Text="本地时间" Margin="20,0,0,0" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                    <TextBlock Text="当前名称:" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="530" Margin="0,10,0,0">
+                    <TextBlock Text="计算机名称:" />
                     <TextBox x:Name="input_name" Text="Loading..." Width="150" Margin="5,0,0,0"/>
-                    <Button Content="生成" Click="GenerateNameClick" Width="50" Margin="20,0,0,0"/>
-                    <Button Content="更新" Click="UpdateNameClick" Width="50" Margin="20,0,0,0"/>
-                    <TextBlock Text=" (重启生效)" />
+                    <Button x:Name="generate_name" Content="生成" Click="GenerateNameClick" Width="50" Margin="20,0,0,0"/>
+                    <Button x:Name="update_name" Content="更新" Click="UpdateNameClick" Width="50" Margin="20,0,0,0"/>
+                    <TextBlock x:Name="reboot" Text="(需要重启)" Margin="10,0,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                     <Button Content="保存当前配置" Click="SaveConfigClick" Width="110" />
                     <CheckBox x:Name="check" IsChecked="True" IsEnabled="False" Content="对比上一次配置" Margin="10,0,0,0" VerticalContentAlignment="Center" />
                     <TextBlock x:Name="save_config" Text="加载配置..." Margin="20,0,0,0"/>
+                    <Button Content="删除配置" Click="DeleteConfigClick" Width="80" Margin="20,0,0,0"/>
                 </StackPanel>
             </StackPanel>
+            <Button Content="快捷修改" Width="80" Height="50" Click="Fast_Click" Canvas.Left="540" Canvas.Top="665" />
+            <Button x:Name="reload" Canvas.Left="680" Canvas.Top="660" Width="80" Height="60"
+                    MouseEnter="My_MouseEnter" MouseLeave="My_MouseLeave" Click="Reload_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentControl>
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                <Grid>
+                                    <Image Source="./Resources/reload_128px.png" Stretch="Uniform"/>
+                                    <TextBlock Text="刷新" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </ContentControl>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Canvas>
 
     </Grid>

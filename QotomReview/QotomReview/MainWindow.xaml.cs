@@ -35,6 +35,7 @@ namespace QotomReview
         private Thread it;
         private Thread nt;
         private bool compared = true;
+        private bool compare_complete = false;
 
         static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "config.xml";
 
@@ -44,45 +45,23 @@ namespace QotomReview
             compared = check.IsChecked == true ? true : false;
             if(compared)
             {
-                //如果存在配置
-                if(System.IO.File.Exists(configPath))
-                {
-                    int i = 3;
-                    while (old_config == null && i > 0)
-                    {
-                        old_config = SaveXml.ReadConfigurationFromXml(configPath);
-                        i--;
-                    }
-                    if(old_config == null)
-                    {
-                        save_config.Text = "读取配置失败!";
-                        save_config.Foreground = Brushes.Red;
-                    }
-                    else
-                    {
-                        save_config.Text = "读取配置成功!";
-                        save_config.Foreground = Brushes.Black;
-                    }
-                }
-                else
-                {
-                    compared = false;
-                    save_config.Text = "找不到配置!";
-                    save_config.Foreground = Brushes.Red;
-                }
+                compare_complete = CompareConfig(configPath);
             }
-
-            it = new Thread(InfoThread)
+            if(compare_complete)
             {
-                IsBackground = true
-            };
-            it.Start();
+                it = new Thread(InfoThread)
+                {
+                    IsBackground = true
+                };
+                it.Start();
 
-            nt = new Thread(NetThread)
-            {
-                IsBackground = true
-            };
-            nt.Start();
+                nt = new Thread(NetThread)
+                {
+                    IsBackground = true
+                };
+                nt.Start();
+            }
+            
 
             systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
             systemTimeTimer.Interval = TimeSpan.FromSeconds(1);
@@ -94,11 +73,46 @@ namespace QotomReview
             cpuTemperatureTimer.Start();
         }
 
+        private bool CompareConfig(string pathName)
+        {
+            //如果存在配置
+            if (System.IO.File.Exists(pathName))
+            {
+                save_config.Text = "读取中...";
+                int i = 3;
+                while (old_config == null && i > 0)
+                {
+                    old_config = SaveXml.ReadConfigurationFromXml(pathName);
+                    i--;
+                }
+                if (old_config == null)
+                {
+                    save_config.Text = "读取配置失败!";
+                    save_config.Foreground = Brushes.Red;
+                    compare_complete = true;
+                }
+                else
+                {
+                    save_config.Text = "读取配置成功!";
+                    save_config.Foreground = Brushes.Black;
+                    compare_complete = true;
+                }
+            }
+            else
+            {
+                compared = false;
+                save_config.Text = "找不到配置!";
+                save_config.Foreground = Brushes.Red;
+                compare_complete = true;
+            }
+            return compare_complete;
+        }
+
         private void SystemTimeTimerTick(object sender, EventArgs e)
         {
             this.Dispatcher.Invoke((Action)delegate ()
             {
-                time.Text = DateTime.Now.ToString();
+                local_time.Text = DateTime.Now.ToString();
             });
         }
 
@@ -133,6 +147,7 @@ namespace QotomReview
 
         void InfoThread()
         {
+            Console.WriteLine("InfoThread.....");
             string systemVer = Computer.GetSystemVersion();
             string systemType = Computer.GetSystemType("SystemType");
             string cpuName = Computer.GetCpuName();
@@ -157,7 +172,14 @@ namespace QotomReview
                 os_language.Text = language;
                 mb.Text = boardType;
                 bios.Text = biosVer;
-                if(compared && old_config != null)
+                os.Foreground = Brushes.Black;
+                os_type.Foreground = Brushes.Black;
+                cpu.Foreground = Brushes.Black;
+                os_language.Foreground = Brushes.Black;
+                mb.Foreground = Brushes.Black;
+                bios.Foreground = Brushes.Black;
+
+                if (compared && old_config != null)
                 {
                     if (!old_config.OSVer.Equals(systemVer))
                     {
@@ -191,6 +213,7 @@ namespace QotomReview
 
         void NetThread()
         {
+            Console.WriteLine("NetThread.....");
             //内存信息获取
             List<BaseData> memList = Computer.GetMemoryInfo();
             if (memList != null && memList.Count > 0)
@@ -354,7 +377,7 @@ namespace QotomReview
             {
                 ntp_address = ntp_server.Text;
                 systemTimeTimer.Stop();
-                time.Text = "synchronizationing...";
+                local_time.Text = "synchronizationing...";
             });
                  
             try
@@ -367,7 +390,7 @@ namespace QotomReview
             {
                 this.Dispatcher.Invoke((Action)delegate ()
                 {
-                    time.Text = "synchronizationing failed,check the network!";
+                    local_time.Text = "synchronizationing failed,check the network!";
                 });
             }
         }
@@ -412,7 +435,8 @@ namespace QotomReview
         {
             Random r = new Random();
             int num = r.Next(0,999);
-            newName = "QT"+DateTime.Now.ToShortDateString().Replace("/","")
+            newName = "QT"+DateTime.Now.ToShortDateString()
+                .Replace("/","").Replace("-", "").Replace(".", "")
                 + DateTime.Now.Hour + DateTime.Now.Minute + num;
             input_name.Text = newName;
         }
@@ -439,7 +463,11 @@ namespace QotomReview
             {
                 proc.WaitForExit();
                 // print the status of command
-                Console.WriteLine("Exit code = " + proc.ExitCode);
+                //Console.WriteLine("Exit code = " + proc.ExitCode);
+                if(proc.ExitCode == 0)
+                {
+                    reboot.Text = "更新成功，重启生效！";
+                }
             }
         }
 
@@ -454,6 +482,15 @@ namespace QotomReview
             {
                 save_config.Text = "保存当前配置失败!";
                 save_config.Foreground = Brushes.Red;
+            }
+        }
+
+        private void DeleteConfigClick(object sender, RoutedEventArgs e)
+        {
+            //如果存在配置
+            if (System.IO.File.Exists(configPath))
+            {
+                System.IO.File.Delete(configPath);
             }
         }
 
@@ -472,6 +509,59 @@ namespace QotomReview
             {
                 cpuCelsius.Dispose();
             }
+        }
+
+        private void My_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            reload.BorderBrush = Brushes.Red;
+            reload.BorderThickness = new Thickness(2.0);
+            reload.Opacity = 0.5;
+        }
+
+        private void My_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            reload.BorderBrush = null;
+            reload.BorderThickness = new Thickness(0.0);
+            reload.Opacity = 1;
+        }
+
+        //快捷修改时间和计算机名
+        private void Fast_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateTimeClick(update_time, new RoutedEventArgs());
+            GenerateNameClick(generate_name, new RoutedEventArgs());
+            UpdateNameClick(update_name, new RoutedEventArgs());
+        }
+
+        //强制更新配置信息
+        private void Reload_Click(object sender, RoutedEventArgs e)
+        {
+            //清空配置，重新读取
+            save_config.Text = "读取中...";
+            old_config = null;
+            compared = check.IsChecked == true ? true : false;
+            compare_complete = false;
+            compare_complete = CompareConfig(configPath);
+            if(compare_complete)
+            {
+                if (it.ThreadState == System.Threading.ThreadState.Stopped)
+                {
+                    it = new Thread(InfoThread)
+                    {
+                        IsBackground = true
+                    };
+                    it.Start();
+                }
+                if (nt.ThreadState == System.Threading.ThreadState.Stopped)
+                {
+                    nt = new Thread(NetThread)
+                    {
+                        IsBackground = true
+                    };
+                    nt.Start();
+                }
+            }
+            
         }
 
         

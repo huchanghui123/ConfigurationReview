@@ -181,6 +181,7 @@ namespace QotomReview.Tools
             {
                 reader.Close();
             }
+            Console.WriteLine("ReadConfigurationFromXml end...");
             return config;
         }
     }
