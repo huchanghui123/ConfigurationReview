@@ -53,5 +53,10 @@ namespace QotomReview.model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public override string ToString()
+        {
+            return $"{{{nameof(Name)}={Name}, {nameof(Check)}={Check}, {nameof(Value)}={Value}, {nameof(MinValue)}={MinValue}, {nameof(MaxValue)}={MaxValue}}}";
+        }
     }
 }

@@ -38,10 +38,15 @@ namespace QotomReview.Tools
                         {
                             if (sensor.SensorType == SensorType.Temperature && sensor.Value.HasValue)
                             {
-                                sensorList.Add(new SensorData(sensor.Name, 
+                                SensorData sd = new SensorData(sensor.Name,
                                     sensor.Value.Value + " °C",
-                                    sensor.Min.Value + " °C", 
-                                    sensor.Max.Value + " °C"));
+                                    sensor.Min.Value + " °C",
+                                    sensor.Max.Value + " °C");
+                                if (sensor.Value.Value >= 60)
+                                {
+                                    sd.Check = "error";
+                                }
+                                sensorList.Add(sd);
                             }
                         }
                     }

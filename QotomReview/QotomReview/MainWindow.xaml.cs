@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -35,7 +36,12 @@ namespace QotomReview
         private Thread it;
         private Thread nt;
         private bool compared = true;
-        private bool compare_complete = false;
+
+        //private int baudRate = 115200;
+        //private int dataBits = 8;
+        //private String stopBits = "One";
+        //private String parity = "None";
+        //private String handshake = "None";
 
         static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "config.xml";
 
@@ -45,22 +51,20 @@ namespace QotomReview
             compared = check.IsChecked == true ? true : false;
             if(compared)
             {
-                compare_complete = CompareConfig(configPath);
+                ReadConfig(configPath);
             }
-            if(compare_complete)
+            
+            it = new Thread(InfoThread)
             {
-                it = new Thread(InfoThread)
-                {
-                    IsBackground = true
-                };
-                it.Start();
+                IsBackground = true
+            };
+            it.Start();
 
-                nt = new Thread(NetThread)
-                {
-                    IsBackground = true
-                };
-                nt.Start();
-            }
+            nt = new Thread(NetThread)
+            {
+                IsBackground = true
+            };
+            nt.Start();
             
 
             systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
@@ -73,29 +77,40 @@ namespace QotomReview
             cpuTemperatureTimer.Start();
         }
 
-        private bool CompareConfig(string pathName)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            portName.ItemsSource = SerialPort.GetPortNames();
+            portName.SelectedIndex = 0;
+            string[] baudDatas = { "9600", "19200", "38400", "56000", "57600", "115200", "128000" };
+            baudRate.ItemsSource = baudDatas;
+            baudRate.SelectedIndex = 5;
+            string[] stopBitData = { StopBits.One + "", StopBits.Two + "", StopBits.OnePointFive + "" };
+            stopBits.ItemsSource = stopBitData;
+            stopBits.SelectedIndex = 0;
+            string[] parityData = { Parity.None + "", Parity.Odd + "", Parity.Even + "", Parity.Mark + "", Parity.Space + "" };
+            parity.ItemsSource = parityData;
+            parity.SelectedIndex = 0;
+            string[] handShakeData = { Handshake.None + "", Handshake.XOnXOff + "", Handshake.RequestToSend + "", Handshake.RequestToSendXOnXOff + "" };
+            handShake.ItemsSource = handShakeData;
+            handShake.SelectedIndex = 0;
+        }
+
+        private void ReadConfig(string pathName)
         {
             //如果存在配置
             if (System.IO.File.Exists(pathName))
             {
                 save_config.Text = "读取中...";
-                int i = 3;
-                while (old_config == null && i > 0)
-                {
-                    old_config = SaveXml.ReadConfigurationFromXml(pathName);
-                    i--;
-                }
+                old_config = SaveXml.ReadConfigurationFromXml(pathName);
                 if (old_config == null)
                 {
                     save_config.Text = "读取配置失败!";
                     save_config.Foreground = Brushes.Red;
-                    compare_complete = true;
                 }
                 else
                 {
                     save_config.Text = "读取配置成功!";
                     save_config.Foreground = Brushes.Black;
-                    compare_complete = true;
                 }
             }
             else
@@ -103,9 +118,7 @@ namespace QotomReview
                 compared = false;
                 save_config.Text = "找不到配置!";
                 save_config.Foreground = Brushes.Red;
-                compare_complete = true;
             }
-            return compare_complete;
         }
 
         private void SystemTimeTimerTick(object sender, EventArgs e)
@@ -206,7 +219,6 @@ namespace QotomReview
                         bios.Foreground = Brushes.Red;
                     }
                 }
-                
                 input_name.Text = account;
             });
         }
@@ -246,7 +258,6 @@ namespace QotomReview
                             }
                             j++;
                         }
-                        
                         newMemList.Add(data);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
@@ -261,7 +272,6 @@ namespace QotomReview
                         mem_List.ItemsSource = memList;
                     });
                 }
-                
             }
             //磁盘信息获取
             List<BaseData> diskList = Computer.GetDiskInfo();
@@ -294,7 +304,6 @@ namespace QotomReview
                             }
                             j++;
                         }
-                        
                         newDiskList.Add(data);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
@@ -309,7 +318,6 @@ namespace QotomReview
                         disk_List.ItemsSource = diskList;
                     });
                 }
-                
             }
             //网卡信息获取
             List<NetWorkData> netList = Computer.GetNetWorkAdpterInfo();
@@ -342,7 +350,6 @@ namespace QotomReview
                             }
                             j++;
                         }
-                        
                         newNetList.Add(data);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
@@ -357,7 +364,6 @@ namespace QotomReview
                         net_List.ItemsSource = netList;
                     });
                 }
-                
             }
         }
 
@@ -390,7 +396,7 @@ namespace QotomReview
             {
                 this.Dispatcher.Invoke((Action)delegate ()
                 {
-                    local_time.Text = "synchronizationing failed,check the network!";
+                    local_time.Text = "synchronizationing failed!";
                 });
             }
         }
@@ -463,7 +469,6 @@ namespace QotomReview
             {
                 proc.WaitForExit();
                 // print the status of command
-                //Console.WriteLine("Exit code = " + proc.ExitCode);
                 if(proc.ExitCode == 0)
                 {
                     reboot.Text = "更新成功，重启生效！";
@@ -491,6 +496,7 @@ namespace QotomReview
             if (System.IO.File.Exists(configPath))
             {
                 System.IO.File.Delete(configPath);
+                save_config.Text = "配置已删除!";
             }
         }
 
@@ -520,8 +526,8 @@ namespace QotomReview
 
         private void My_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            reload.BorderBrush = null;
-            reload.BorderThickness = new Thickness(0.0);
+            reload.BorderBrush = Brushes.Black;
+            reload.BorderThickness = new Thickness(1.0);
             reload.Opacity = 1;
         }
 
@@ -540,30 +546,40 @@ namespace QotomReview
             save_config.Text = "读取中...";
             old_config = null;
             compared = check.IsChecked == true ? true : false;
-            compare_complete = false;
-            compare_complete = CompareConfig(configPath);
-            if(compare_complete)
+            ReadConfig(configPath);
+
+            if (it.ThreadState == System.Threading.ThreadState.Stopped)
             {
-                if (it.ThreadState == System.Threading.ThreadState.Stopped)
+                it = new Thread(InfoThread)
                 {
-                    it = new Thread(InfoThread)
-                    {
-                        IsBackground = true
-                    };
-                    it.Start();
-                }
-                if (nt.ThreadState == System.Threading.ThreadState.Stopped)
-                {
-                    nt = new Thread(NetThread)
-                    {
-                        IsBackground = true
-                    };
-                    nt.Start();
-                }
+                    IsBackground = true
+                };
+                it.Start();
             }
-            
+            if (nt.ThreadState == System.Threading.ThreadState.Stopped)
+            {
+                nt = new Thread(NetThread)
+                {
+                    IsBackground = true
+                };
+                nt.Start();
+            }
+
         }
 
-        
+        private void OpenAudioClick(object sender, RoutedEventArgs e)
+        {
+            Process.Start("mmsys.cpl");
+        }
+
+        private void OpenSerialPort(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OpenAllSerialPort(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

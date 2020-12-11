@@ -21,5 +21,10 @@
             this.Ip = ip;
             this.Status = status;
         }
+
+        public override string ToString()
+        {
+            return $"{{{nameof(Adapter)}={Adapter}, {nameof(Type)}={Type}, {nameof(Mac)}={Mac}, {nameof(Ip)}={Ip}, {nameof(Status)}={Status}, {nameof(Check)}={Check}}}";
+        }
     }
 }

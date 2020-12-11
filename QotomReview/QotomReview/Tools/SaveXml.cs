@@ -59,7 +59,6 @@ namespace QotomReview.Tools
                 memory.AppendChild(mem);
             }
             
-
             XmlElement storage = doc.CreateElement("Storage");
             config.AppendChild(storage);
             if (data.Storage != null && data.Storage.Length >= 1)
@@ -78,8 +77,6 @@ namespace QotomReview.Tools
                 storage.AppendChild(disk);
             }
 
-                
-
             XmlElement network = doc.CreateElement("Network");
             config.AppendChild(network);
             if(data.Network != null && data.Network.Length >= 1)
@@ -97,8 +94,6 @@ namespace QotomReview.Tools
                 net.InnerText = "unknown";
                 network.AppendChild(net);
             }
-            
-
             doc.Save(path);
         }
 
@@ -157,7 +152,6 @@ namespace QotomReview.Tools
                             temp[i] = xe.ChildNodes.Item(i).InnerText;
                             //Console.WriteLine(xe.Name + ":" + temp[i]);
                         }
-
                         if (xe.Name.Equals("Memory"))
                         {
                             config.Memory = temp;
@@ -170,7 +164,7 @@ namespace QotomReview.Tools
                         {
                             config.Network = temp;
                         }
-                        }
+                    }
                 }
             }
             catch (Exception )
