@@ -1,0 +1,48 @@
+﻿<Window x:Class="QotomReview.Views.ComWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QotomReview.Views"
+        mc:Ignorable="d"
+        Title="COM" Height="450" Width="500" Loaded="Window_Loaded" Closed="Window_Closed">
+    <Grid>
+        <StackPanel Margin="5">
+            <GroupBox x:Name="settings" Header="设置">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="COM:" Width="55" VerticalAlignment="Center" />
+                        <ComboBox x:Name="com" Text="COM1" Width="70" Margin="10,0,0,0"/>
+                        <TextBlock Text="BaudRate:" Width="70" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="baud_Rate" Text="115200" IsEditable="True" Width="80" />
+                        <TextBlock Text="dataBits:" Width="75" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="data_Bits" Text="8" IsEditable="True" Width="50"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBlock Text="StopBits:" Width="55" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="stop_Bits" Text="One" Width="70" Margin="10,0,0,0"/>
+                        <TextBlock Text="Parity:" Width="70"  Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="_parity" Text="None"  Width="80" />
+                        <TextBlock Text="Handshake:" Width="75" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="hand_shake" Text="8" Width="80" />
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="接收区" Height="235">
+                <TextBox x:Name="receive_box"/>
+            </GroupBox>
+            <GroupBox Header="发送区" Height="70">
+                <TextBox x:Name="send_box"/>
+            </GroupBox>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                <Button Content="发送" Width="50" Click="Send_Click"/>
+                <TextBox x:Name="delay" Text="200" Width="50" Margin="5,0,0,0"/>
+                <TextBlock Text="(ms)" VerticalAlignment="Center"/>
+                <Grid HorizontalAlignment="Right" Width="340" >
+                    <Button Content="停止" Width="50" Click="Stop_Click" HorizontalAlignment="Right"/>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

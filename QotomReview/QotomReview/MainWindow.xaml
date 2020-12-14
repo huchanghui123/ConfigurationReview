@@ -184,8 +184,8 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <Button Content="打开串口" Click="OpenSerialPort" Width="80" Canvas.Left="550" Canvas.Top="685" />
-            <Button Content="打开全部" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="685" />
+            <Button x:Name="open_com" Content="打开串口" Click="OpenSerialPort" Width="80" Canvas.Left="550" Canvas.Top="685" />
+            <Button x:Name="open_all_com" Content="打开全部" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="685" />
         </Canvas>
 
     </Grid>

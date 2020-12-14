@@ -1,6 +1,7 @@
 ﻿using QotomReview.model;
 using QotomReview.Tool;
 using QotomReview.Tools;
+using QotomReview.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,6 +43,8 @@ namespace QotomReview
         //private String stopBits = "One";
         //private String parity = "None";
         //private String handshake = "None";
+
+        private ComWindow comWindow;
 
         static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "config.xml";
 
@@ -574,7 +577,22 @@ namespace QotomReview
 
         private void OpenSerialPort(object sender, RoutedEventArgs e)
         {
+            comWindow = new ComWindow(portName.Text, baudRate.Text, dataBits.Text,
+                stopBits.Text, parity.Text, handShake.Text)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            comWindow.Closed += new EventHandler(ComWindowClosed);
+            open_com.IsEnabled = false;
+            open_all_com.IsEnabled = false;
+            comWindow.ShowDialog();
+            
+        }
 
+        private void ComWindowClosed(object sender, EventArgs e)
+        {
+            open_com.IsEnabled = true;
+            open_all_com.IsEnabled = true;
         }
 
         private void OpenAllSerialPort(object sender, RoutedEventArgs e)
