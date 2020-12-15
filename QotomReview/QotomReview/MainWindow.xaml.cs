@@ -588,16 +588,23 @@ namespace QotomReview
             comWindow.Show();
         }
 
+        private void OpenAllSerialPort(object sender, RoutedEventArgs e)
+        {
+            AllComWindow w1 = new AllComWindow(baudRate.Text, dataBits.Text,
+                stopBits.Text, parity.Text, handShake.Text)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            w1.Closed += new EventHandler(ComWindowClosed);
+            open_com.IsEnabled = false;
+            open_all_com.IsEnabled = false;
+            w1.Show();
+        }
+
         private void ComWindowClosed(object sender, EventArgs e)
         {
             open_com.IsEnabled = true;
             open_all_com.IsEnabled = true;
-        }
-
-        private void OpenAllSerialPort(object sender, RoutedEventArgs e)
-        {
-            Window1 w1 = new Window1();
-            w1.Show();
         }
     }
 }

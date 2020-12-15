@@ -21,8 +21,6 @@ namespace QotomReview.Views
         private String parity = "None";
         private String handshake = "None";
 
-        private string indata = "";
-        private StringBuilder sb = new StringBuilder();
         private SerialPort serialPort;
         private DispatcherTimer timer;
 
@@ -75,13 +73,12 @@ namespace QotomReview.Views
             string[] handShakeData = { Handshake.None + "", Handshake.XOnXOff + "", Handshake.RequestToSend + "", Handshake.RequestToSendXOnXOff + "" };
             hand_shake.ItemsSource = handShakeData;
             hand_shake.SelectedIndex = handShakeData.ToList().IndexOf(handshake);
-            Console.WriteLine("init:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff:ffffff"));
-
+            //Console.WriteLine("init:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff:ffffff"));
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("onloaded:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff:ffffff"));
+            //Console.WriteLine("onloaded:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff:ffffff"));
             OpenSerialPort();
             Send_Click(send, new RoutedEventArgs());
         }
@@ -130,7 +127,7 @@ namespace QotomReview.Views
 
         private void Send_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Send_Click:" + serialPort.IsOpen + " " + timer.IsEnabled);
+            //Console.WriteLine("Send_Click:" + serialPort.IsOpen + " " + timer.IsEnabled);
             try
             {
                 if (serialPort.IsOpen)
@@ -154,6 +151,7 @@ namespace QotomReview.Views
             }
             catch (Exception ex)
             {
+                //Console.WriteLine("Send_Click Exception!!!!");
                 MessageBox.Show(ex.Message);
             }
         }
@@ -162,25 +160,28 @@ namespace QotomReview.Views
         {
             SerialPort serialPort1 = (SerialPort)sender;
             byte[] ReDatas = new byte[serialPort1.BytesToRead];
+            string message = "";
             try
             {
-                indata = serialPort1.ReadLine();
+                message = serialPort1.ReadLine();
+            }
+            catch (TimeoutException)
+            {
+                message = "";
             }
             catch (Exception ex)
             {
-                this.Dispatcher.BeginInvoke((Action)delegate () {
+                this.Dispatcher.BeginInvoke((Action)delegate ()
+                {
                     receive_box.AppendText(ex.Message + " Received:" + ReDatas.Length);
-
-                    Stop_Click(stop, new RoutedEventArgs());
+                    //Stop_Click(stop, new RoutedEventArgs());
+                    Close_Click(close, new RoutedEventArgs());
                 });
             }
-            sb.Clear();
-            sb.Append(indata);
-            indata = "";
             try
             {
                 this.Dispatcher.BeginInvoke((Action)delegate () {
-                    receive_box.AppendText(sb.ToString());
+                    receive_box.AppendText(message);
                     receive_box.ScrollToEnd();
                 });
             }

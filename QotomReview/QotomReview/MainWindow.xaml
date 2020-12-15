@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview"
         mc:Ignorable="d"
-        Title="Ootom Review V1.01" Height="800" Width="930"
+        Title="Ootom Review V1.02" Height="800" Width="930"
         Closing="OnClosing" ResizeMode="CanMinimize" Loaded="Window_Loaded">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock }" BasedOn="{StaticResource {x:Type TextBlock}}">

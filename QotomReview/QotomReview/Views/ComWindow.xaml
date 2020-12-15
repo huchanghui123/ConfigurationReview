@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview.Views"
         mc:Ignorable="d"
-        Title="COM" Height="450" Width="500" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="COM Test" Height="450" Width="500" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
         <StackPanel Margin="5">
             <GroupBox x:Name="settings" Header="设置">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" >
-                        <TextBlock Text="COM:" Width="55" VerticalAlignment="Center" />
+                        <TextBlock Text="Port:" Width="55" VerticalAlignment="Center" />
                         <ComboBox x:Name="com" Text="COM1" Width="70" IsEnabled="False" SelectionChanged="Com_SelectionChanged" Margin="10,0,0,0"/>
                         <TextBlock Text="BaudRate:" Width="70" Margin="10,0,0,0" VerticalAlignment="Center"/>
                         <ComboBox x:Name="baud_Rate" Text="115200" IsEditable="True" Width="80" />
