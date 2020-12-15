@@ -145,7 +145,7 @@
                             <TextBlock Text="停止位" Width="80" Margin="10,0,0,0"/>
                             <TextBlock Text="校验位" Width="80" Margin="10,0,0,0"/>
                             <TextBlock Text="握手方式" Width="80" Margin="10,0,0,0"/>
-                            <CheckBox x:Name="rtsCheck" IsChecked="True" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                            <CheckBox x:Name="rtsCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <ComboBox x:Name="portName" Text="COM1" Width="65"/>
@@ -154,7 +154,7 @@
                             <ComboBox x:Name="stopBits" Text="1" Width="80" Margin="10,0,0,0"/>
                             <ComboBox x:Name="parity" Text="1" Width="80" Margin="10,0,0,0"/>
                             <ComboBox x:Name="handShake" Text="1" Width="80" Margin="10,0,0,0"/>
-                            <CheckBox x:Name="dtrCheck" IsChecked="True" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                            <CheckBox x:Name="dtrCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>

@@ -585,8 +585,7 @@ namespace QotomReview
             comWindow.Closed += new EventHandler(ComWindowClosed);
             open_com.IsEnabled = false;
             open_all_com.IsEnabled = false;
-            comWindow.ShowDialog();
-            
+            comWindow.Show();
         }
 
         private void ComWindowClosed(object sender, EventArgs e)
@@ -597,7 +596,8 @@ namespace QotomReview
 
         private void OpenAllSerialPort(object sender, RoutedEventArgs e)
         {
-
+            Window1 w1 = new Window1();
+            w1.Show();
         }
     }
 }
