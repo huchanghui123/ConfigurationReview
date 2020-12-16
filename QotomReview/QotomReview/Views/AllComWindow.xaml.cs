@@ -55,8 +55,8 @@ namespace QotomReview.Views
             parity = sparity;
             handshake = shandshake;
 
-            Console.WriteLine("BaudRate:{0} DataBits:{1} StopBits:{2} Parity:{3} Handshake:{4}"
-                , baudRate, dataBits, stopBits, parity, handshake);
+            //Console.WriteLine("BaudRate:{0} DataBits:{1} StopBits:{2} Parity:{3} Handshake:{4}"
+            //    , baudRate, dataBits, stopBits, parity, handshake);
 
             timer = new DispatcherTimer
             {
@@ -69,7 +69,7 @@ namespace QotomReview.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("serial port window Loaded!!!");
+            //Console.WriteLine("serial port window Loaded!!!");
             sps = SerialPort.GetPortNames();
             serialCount = sps.Length;
             int count = 0;
@@ -334,7 +334,7 @@ namespace QotomReview.Views
                         if (recevieName.Equals(recevie_panel.Name))
                         {
                             TextBox tv = (TextBox)recevie_panel.Children[1];
-                            Console.WriteLine("recevie_panel name:{0} data:{1}", recevie_panel.Name, message);
+                            //Console.WriteLine("recevie_panel name:{0} data:{1}", recevie_panel.Name, message);
                             tv.AppendText(message);
                             tv.ScrollToEnd();
                         }
@@ -360,8 +360,8 @@ namespace QotomReview.Views
                     {
                         String str = serial_list[index].PortName + "测试中.";
                         serial_list[index].WriteLine(str);
-                        Console.WriteLine("timer tick state panel name:{0} port name:{1} send data:{2}",
-                            state_panel.Name, serial_list[index].PortName, str);
+                        //Console.WriteLine("timer tick state panel name:{0} port name:{1} send data:{2}",
+                        //    state_panel.Name, serial_list[index].PortName, str);
                     }
                     this.Dispatcher.Invoke((Action)delegate ()
                     {

@@ -36,6 +36,7 @@ namespace QotomReview
         private static string newName = String.Empty;
         private Thread it;
         private Thread nt;
+        private Thread read;
         private bool compared = true;
 
         //private int baudRate = 115200;
@@ -51,24 +52,34 @@ namespace QotomReview
         public MainWindow()
         {
             InitializeComponent();
-            compared = check.IsChecked == true ? true : false;
-            if(compared)
-            {
-                ReadConfig(configPath);
-            }
-            
+
             it = new Thread(InfoThread)
             {
                 IsBackground = true
             };
-            it.Start();
+            //it.Start();
 
             nt = new Thread(NetThread)
             {
                 IsBackground = true
             };
-            nt.Start();
-            
+            //nt.Start();
+
+            compared = check.IsChecked == true ? true : false;
+            if (compared)
+            {
+                read = new Thread(ReadConfig)
+                {
+                    IsBackground = true
+                };
+                read.Start();
+                //ReadConfig(configPath);
+            }
+            else
+            {
+                it.Start();
+                nt.Start();
+            }
 
             systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
             systemTimeTimer.Interval = TimeSpan.FromSeconds(1);
@@ -98,29 +109,60 @@ namespace QotomReview
             handShake.SelectedIndex = 0;
         }
 
-        private void ReadConfig(string pathName)
+        void ReadConfig()
         {
             //如果存在配置
-            if (System.IO.File.Exists(pathName))
+            if (System.IO.File.Exists(configPath))
             {
-                save_config.Text = "读取中...";
-                old_config = SaveXml.ReadConfigurationFromXml(pathName);
-                if (old_config == null)
+                old_config = SaveXml.ReadConfigurationFromXml(configPath);
+                this.Dispatcher.Invoke((Action)delegate ()
                 {
-                    save_config.Text = "读取配置失败!";
-                    save_config.Foreground = Brushes.Red;
-                }
-                else
-                {
-                    save_config.Text = "读取配置成功!";
-                    save_config.Foreground = Brushes.Black;
-                }
+                    save_config.Text = "读取中...";
+                    if (old_config == null)
+                    {
+                        save_config.Text = "读取配置失败!";
+                        save_config.Foreground = Brushes.Red;
+                    }
+                    else
+                    {
+                        save_config.Text = "读取配置成功!";
+                        save_config.Foreground = Brushes.Black;
+                    }
+                });
             }
             else
             {
+                this.Dispatcher.Invoke((Action)delegate ()
+                {
+                    save_config.Text = "找不到配置!";
+                    save_config.Foreground = Brushes.Red;
+                });
                 compared = false;
-                save_config.Text = "找不到配置!";
-                save_config.Foreground = Brushes.Red;
+            }
+            //Console.WriteLine(it.ThreadState+"-----------"+ nt.ThreadState);
+            if (it.ThreadState != System.Threading.ThreadState.Stopped)
+            {
+                it.Start();
+            }
+            else
+            {
+                it = new Thread(InfoThread)
+                {
+                    IsBackground = true
+                };
+                it.Start();
+            }
+            if (nt.ThreadState != System.Threading.ThreadState.Stopped)
+            {
+                nt.Start();
+            }
+            else
+            {
+                nt = new Thread(NetThread)
+                {
+                    IsBackground = true
+                };
+                nt.Start();
             }
         }
 
@@ -549,25 +591,7 @@ namespace QotomReview
             save_config.Text = "读取中...";
             old_config = null;
             compared = check.IsChecked == true ? true : false;
-            ReadConfig(configPath);
-
-            if (it.ThreadState == System.Threading.ThreadState.Stopped)
-            {
-                it = new Thread(InfoThread)
-                {
-                    IsBackground = true
-                };
-                it.Start();
-            }
-            if (nt.ThreadState == System.Threading.ThreadState.Stopped)
-            {
-                nt = new Thread(NetThread)
-                {
-                    IsBackground = true
-                };
-                nt.Start();
-            }
-
+            ReadConfig();
         }
 
         private void OpenAudioClick(object sender, RoutedEventArgs e)
