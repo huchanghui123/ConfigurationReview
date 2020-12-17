@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -139,31 +140,18 @@ namespace QotomReview
                 });
                 compared = false;
             }
-            //Console.WriteLine(it.ThreadState+"-----------"+ nt.ThreadState);
-            if (it.ThreadState != System.Threading.ThreadState.Stopped)
+
+            it = new Thread(InfoThread)
             {
-                it.Start();
-            }
-            else
+                IsBackground = true
+            };
+            it.Start();
+            
+            nt = new Thread(NetThread)
             {
-                it = new Thread(InfoThread)
-                {
-                    IsBackground = true
-                };
-                it.Start();
-            }
-            if (nt.ThreadState != System.Threading.ThreadState.Stopped)
-            {
-                nt.Start();
-            }
-            else
-            {
-                nt = new Thread(NetThread)
-                {
-                    IsBackground = true
-                };
-                nt.Start();
-            }
+                IsBackground = true
+            };
+            nt.Start();
         }
 
         private void SystemTimeTimerTick(object sender, EventArgs e)
@@ -287,16 +275,18 @@ namespace QotomReview
                 if (compared && old_config != null)
                 {
                     List<BaseData> newMemList = new List<BaseData>();
-                    string[] old_mem = old_config.Memory;
+                    //string[] old_mem = old_config.Memory;
+                    List<String> old_mem = old_config.Memory.ToList();
                     int j = 0;
                     foreach (BaseData data in memList)
                     {
-                        if (old_mem.Length != memList.Count)
+                        if (old_mem.Count != memList.Count)
                         {
                             data.Check = "error";
                         }
                         else
                         {
+                            //内存就算有多条，一般也是同型号的，这里不能用Indexof
                             if (!old_mem[j].Equals(mem[j]))
                             {
                                 data.Check = "error";
@@ -333,17 +323,18 @@ namespace QotomReview
                 if (compared && old_config != null)
                 {
                     List<BaseData> newDiskList = new List<BaseData>();
-                    string[] old_storage = old_config.Storage;
+                    List<String> old_storage = old_config.Storage.ToList();
                     int j = 0;
                     foreach (BaseData data in diskList)
                     {
-                        if (old_storage.Length != diskList.Count)
+                        if (old_storage.Count != diskList.Count)
                         {
                             data.Check = "error";
                         }
                         else
                         {
-                            if (!old_storage[j].Equals(disk[j]))
+                            //有时候可能读取出的排序不同，这里改用indexOf
+                            if (old_storage.IndexOf(disk[j]) < 0)
                             {
                                 data.Check = "error";
                             }
@@ -379,21 +370,19 @@ namespace QotomReview
                 if (compared && old_config != null)
                 {
                     List<NetWorkData> newNetList = new List<NetWorkData>();
-                    string[] old_network = old_config.Network;
-                    int j = 0;
+                    List<String> old_network = old_config.Network.ToList();
                     foreach (NetWorkData data in netList)
                     {
-                        if (old_network.Length != netList.Count)
+                        if (old_network.Count != netList.Count)
                         {
                             data.Check = "error";
                         }
                         else
                         {
-                            if (!old_network[j].Equals(net[j]))
+                            if (old_network.IndexOf(data.Adapter) < 0)
                             {
                                 data.Check = "error";
                             }
-                            j++;
                         }
                         newNetList.Add(data);
                     }
@@ -571,7 +560,7 @@ namespace QotomReview
 
         private void My_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            reload.BorderBrush = Brushes.Black;
+            reload.BorderBrush = Brushes.Gray;
             reload.BorderThickness = new Thickness(1.0);
             reload.Opacity = 1;
         }
@@ -587,6 +576,7 @@ namespace QotomReview
         //强制更新配置信息
         private void Reload_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("Reload_Click..............");
             //清空配置，重新读取
             save_config.Text = "读取中...";
             old_config = null;

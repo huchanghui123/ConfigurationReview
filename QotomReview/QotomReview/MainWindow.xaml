@@ -66,8 +66,8 @@
         <Canvas Grid.Column="1" Grid.ColumnSpan="5">
             <StackPanel Canvas.Left="-50" Canvas.Top="5" Width="805" >
                 <StackPanel Orientation="Horizontal">
-                    <Border BorderBrush="Red" BorderThickness="1">
-                    <StackPanel Width="480" HorizontalAlignment="Left">
+                    <Border BorderBrush="Gray" BorderThickness="1">
+                    <StackPanel Width="480" HorizontalAlignment="Left" Margin="2,0,0,0">
                         <TextBlock x:Name="os" Text="Loading..." />
                         <TextBlock x:Name="os_type" Text="Loading..." Margin="0,5,0,0"/>
                         <TextBlock x:Name="os_language" Text="Loading..." Margin="0,5,0,0"/>
@@ -76,7 +76,7 @@
                         <TextBlock x:Name="bios" Text="Loading..." Margin="0,5,0,0"/>
                     </StackPanel>
                     </Border>
-                    <ListView x:Name="temperatureList" Height="160" Width="320" Margin="2,0,0,0"
+                    <ListView x:Name="temperatureList" Height="160" Width="318" Margin="2,0,0,0"
                               BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
                         <ListView.View>
                             <GridView>
@@ -136,7 +136,7 @@
                     <TextBlock x:Name="reboot" Text="(需要重启)" Margin="10,0,0,0"/>
                 </StackPanel>
                 <!-- 串口 -->
-                <Border BorderBrush="Red" BorderThickness="1" >
+                <Border BorderBrush="Gray" BorderThickness="1" >
                     <StackPanel Width="530" HorizontalAlignment="Left">
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="选择" Width="65"/>
