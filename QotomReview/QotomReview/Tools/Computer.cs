@@ -139,7 +139,7 @@ namespace QotomReview.Tool
                 string manufacturer = String.Empty;
                 string type = String.Empty;
                 string speed = String.Empty;
-                int minVoltage = 0;
+                //int minVoltage = 0;
                 foreach (ManagementObject m in moc)
                 {
                     manufacturer = m.Properties["Manufacturer"].Value.ToString();
@@ -150,17 +150,10 @@ namespace QotomReview.Tool
                     }
                     speed = m.Properties["Speed"].Value.ToString() + " MHz";
                     //type = m.Properties["MemoryType"].Value.ToString();
-                    try
-                    {
-                        minVoltage = Convert.ToInt32(m.Properties["MinVoltage"].Value);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    if (minVoltage >= 1350)
-                        type = "DDR3";
-                    else
+                    if (Convert.ToInt16(m.Properties["Speed"].Value) > 1866)
                         type = "DDR4";
+                    else
+                        type = "DDR3";
                     
                     capacity = Convert.ToDouble(m.Properties["Capacity"].Value);
                     size = (capacity / 1024 / 1024 / 1024).ToString("f1") + " GB";
@@ -171,6 +164,40 @@ namespace QotomReview.Tool
                 mc = null;
                 moc.Dispose();
                 return mem_list;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        //USB信息
+        public static List<BaseData> GetUSBInfo()
+        {
+            List<BaseData> usb_list = new List<BaseData>();
+            try
+            {
+                ManagementClass mc = new ManagementClass("Win32_DiskDrive");
+                ManagementObjectCollection moc = mc.GetInstances();
+
+                double disksize = 0;
+                string size = String.Empty;
+                string name = String.Empty;
+                foreach (ManagementObject m in moc)
+                {
+                    if (m.Properties["InterfaceType"].Value.ToString().Equals("USB"))
+                    {
+                        if (m.Properties["Size"].Value != null)
+                        {
+                            name = m.Properties["Caption"].Value.ToString();
+                            disksize = Convert.ToDouble(m.Properties["Size"].Value);
+                            size = (disksize / 1024 / 1024 / 1024).ToString("f1") + " GB";
+                        }
+                        usb_list.Add(new BaseData(name, size));
+                    }
+                }
+                mc = null;
+                moc.Dispose();
+                return usb_list;
             }
             catch (Exception)
             {

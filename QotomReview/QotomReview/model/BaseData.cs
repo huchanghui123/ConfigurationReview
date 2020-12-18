@@ -10,6 +10,12 @@
 
         public BaseData() { }
 
+        public BaseData(string name, string size)
+        {
+            Name = name;
+            Size = size;
+        }
+
         public BaseData(string name, string type, string size)
         {
             Name = name;

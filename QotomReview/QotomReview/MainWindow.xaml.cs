@@ -53,6 +53,7 @@ namespace QotomReview
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             it = new Thread(InfoThread)
             {
@@ -81,21 +82,17 @@ namespace QotomReview
                 it.Start();
                 nt.Start();
             }
-
-            systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
-            systemTimeTimer.Interval = TimeSpan.FromSeconds(1);
-            systemTimeTimer.Start();
-
-            cpuCelsius = new CpuTemperatureReader();
-            cpuTemperatureTimer.Tick += new EventHandler(CpuTemperatureTimerTick);
-            cpuTemperatureTimer.Interval = TimeSpan.FromSeconds(2);
-            cpuTemperatureTimer.Start();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             portName.ItemsSource = SerialPort.GetPortNames();
             portName.SelectedIndex = 0;
+            if(SerialPort.GetPortNames().Length < 1)
+            {
+                open_com.IsEnabled = false;
+                open_all_com.IsEnabled = false;
+            }
             string[] baudDatas = { "9600", "19200", "38400", "56000", "57600", "115200", "128000" };
             baudRate.ItemsSource = baudDatas;
             baudRate.SelectedIndex = 5;
@@ -108,6 +105,15 @@ namespace QotomReview
             string[] handShakeData = { Handshake.None + "", Handshake.XOnXOff + "", Handshake.RequestToSend + "", Handshake.RequestToSendXOnXOff + "" };
             handShake.ItemsSource = handShakeData;
             handShake.SelectedIndex = 0;
+
+            systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
+            systemTimeTimer.Interval = TimeSpan.FromSeconds(1);
+            systemTimeTimer.Start();
+
+            cpuCelsius = new CpuTemperatureReader();
+            cpuTemperatureTimer.Tick += new EventHandler(CpuTemperatureTimerTick);
+            cpuTemperatureTimer.Interval = TimeSpan.FromSeconds(2);
+            cpuTemperatureTimer.Start();
         }
 
         void ReadConfig()
@@ -308,6 +314,16 @@ namespace QotomReview
                     });
                 }
             }
+            //USB信息获取
+            List<BaseData> usbList = Computer.GetUSBInfo();
+            if (usbList != null && usbList.Count > 0)
+            {
+                this.Dispatcher.Invoke((Action)delegate ()
+                {
+                    usb_list.ItemsSource = usbList;
+                });
+            }
+
             //磁盘信息获取
             List<BaseData> diskList = Computer.GetDiskInfo();
             if (diskList != null && diskList.Count > 0)
@@ -594,7 +610,7 @@ namespace QotomReview
             comWindow = new ComWindow(portName.Text, baudRate.Text, dataBits.Text,
                 stopBits.Text, parity.Text, handShake.Text)
             {
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             comWindow.Closed += new EventHandler(ComWindowClosed);
             open_com.IsEnabled = false;
@@ -607,7 +623,7 @@ namespace QotomReview
             AllComWindow w1 = new AllComWindow(baudRate.Text, dataBits.Text,
                 stopBits.Text, parity.Text, handShake.Text)
             {
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             w1.Closed += new EventHandler(ComWindowClosed);
             open_com.IsEnabled = false;

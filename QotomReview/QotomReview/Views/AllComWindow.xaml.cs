@@ -34,8 +34,8 @@ namespace QotomReview.Views
         private string parity = "None";
         private string handshake = "None";
 
-        //测试间隔100毫秒
-        double timeDelay = 100;
+        //测试间隔200毫秒
+        double timeDelay = 200;
         //定时更新检测状态
         TextBlock tb;
         TextBlock cts;

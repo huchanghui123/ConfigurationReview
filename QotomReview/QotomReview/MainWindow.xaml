@@ -10,7 +10,7 @@
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock }" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="15"/>
             <Setter Property="Height" Value="22"/>
         </Style>
         <Style TargetType="{x:Type TextBox }">
@@ -89,31 +89,43 @@
                     </ListView>
                 </StackPanel>
 
-                <ListView x:Name="mem_List" Height="80" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="设备描述" Width="350" DisplayMemberBinding="{Binding Path=Name}" />
-                            <GridViewColumn Header="频率" Width="120" DisplayMemberBinding="{Binding Path=Speed}" />
-                            <GridViewColumn Header="类型" Width="120" DisplayMemberBinding="{Binding Path=Type}" />
-                            <GridViewColumn Header="大小" Width="120" DisplayMemberBinding="{Binding Path=Size}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-
-                <ListView x:Name="disk_List" Height="100" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="设备描述" Width="350" DisplayMemberBinding="{Binding Path=Name}" />
-                            <GridViewColumn Header="类型" Width="120" DisplayMemberBinding="{Binding Path=Type}" />
-                            <GridViewColumn Header="容量" Width="120" DisplayMemberBinding="{Binding Path=Size}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel>
+                        <ListView x:Name="mem_List" Height="80" Width="484" HorizontalAlignment="Left" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="设备描述" Width="210" DisplayMemberBinding="{Binding Path=Name}" />
+                                    <GridViewColumn Header="频率" Width="90" DisplayMemberBinding="{Binding Path=Speed}" />
+                                    <GridViewColumn Header="类型" Width="70" DisplayMemberBinding="{Binding Path=Type}" />
+                                    <GridViewColumn Header="大小" Width="80" DisplayMemberBinding="{Binding Path=Size}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <ListView x:Name="disk_List" Height="100" Width="484" HorizontalAlignment="Left" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="设备描述" Width="290" DisplayMemberBinding="{Binding Path=Name}" />
+                                    <GridViewColumn Header="类型" Width="70" DisplayMemberBinding="{Binding Path=Type}" />
+                                    <GridViewColumn Header="容量" Width="90" DisplayMemberBinding="{Binding Path=Size}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                    <ListView x:Name="usb_list" Height="180" Width="318"  Margin="2,0,0,0"
+                              BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="USB设备描述" Width="220" DisplayMemberBinding="{Binding Path=Name}" />
+                                <GridViewColumn Header="容量" Width="80" DisplayMemberBinding="{Binding Path=Size}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </StackPanel>
 
                 <ListView x:Name="net_List" Height="260" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="适配器描述" Width="330" DisplayMemberBinding="{Binding Path=Adapter}" />
+                            <GridViewColumn Header="适配器描述" Width="335" DisplayMemberBinding="{Binding Path=Adapter}" />
                             <GridViewColumn Header="MAC地址" Width="160" DisplayMemberBinding="{Binding Path=Mac}" />
                             <GridViewColumn Header="IP地址" Width="140" DisplayMemberBinding="{Binding Path=Ip}" />
                             <GridViewColumn Header="连接状态" Width="70" DisplayMemberBinding="{Binding Path=Status}" />
