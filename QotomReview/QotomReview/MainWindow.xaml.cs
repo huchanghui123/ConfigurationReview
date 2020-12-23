@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -39,16 +41,16 @@ namespace QotomReview
         private Thread nt;
         private Thread read;
         private bool compared = true;
-
-        //private int baudRate = 115200;
-        //private int dataBits = 8;
-        //private String stopBits = "One";
-        //private String parity = "None";
-        //private String handshake = "None";
-
         private ComWindow comWindow;
+        private bool comIsStartUp = false;
+        private bool audioIsStartUp = false;
 
-        static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "config.xml";
+        public const int WM_DEVICECHANGE = 0x219;               //系统硬件改变发出的系统消息
+        public const int DBT_DEVICEARRIVAL = 0x8000;            //系统检测到设备已经插入，并且已经处于可用转态
+        public const int DBT_DEVICEREMOVECOMPLETE = 0x8004;     //系统检测到设备已经卸载或者拔出
+
+        static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "qotom_config.xml";
+        static readonly string iniPath = System.AppDomain.CurrentDomain.BaseDirectory + "qotom_review.ini";
 
         public MainWindow()
         {
@@ -75,13 +77,37 @@ namespace QotomReview
                     IsBackground = true
                 };
                 read.Start();
-                //ReadConfig(configPath);
             }
             else
             {
                 it.Start();
                 nt.Start();
             }
+            if(!File.Exists(iniPath))
+            {
+                //0不启动，1启动
+                Computer.Writeini("COM","startup", "0",iniPath);
+                Computer.Writeini("Audio","startup", "0",iniPath);
+            }
+            else
+            {
+                string comValue = Computer.Readini("COM", "startup", "0", iniPath);
+                string audioValue = Computer.Readini("Audio", "startup", "0", iniPath);
+                comIsStartUp = Convert.ToInt16(comValue) == 0 ? false : true;
+                audioIsStartUp = Convert.ToInt16(audioValue) == 0 ? false : true;
+                if(comIsStartUp)
+                {
+                    com_start.IsChecked = comIsStartUp;
+                }
+                if(audioIsStartUp)
+                {
+                    audio_start.IsChecked = audioIsStartUp;
+                }
+
+                //Console.WriteLine("value1:{0} value2:{1} comIsStartUp:{2} audioIsStartUp:{3}",
+                //    comValue, audioValue, comIsStartUp, audioIsStartUp);
+            }
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -106,6 +132,14 @@ namespace QotomReview
             handShake.ItemsSource = handShakeData;
             handShake.SelectedIndex = 0;
 
+            //用于监听Windows消息 
+            //注意获取窗口句柄一定要写在窗口loaded事件里，才能获取到窗口句柄，否则为空
+            //窗口过程
+            if (PresentationSource.FromVisual(this) is HwndSource hwndSource)
+            {
+                hwndSource.AddHook(new HwndSourceHook(DeveiceChanged));  //挂钩
+            }
+
             systemTimeTimer.Tick += new EventHandler(SystemTimeTimerTick);
             systemTimeTimer.Interval = TimeSpan.FromSeconds(1);
             systemTimeTimer.Start();
@@ -114,7 +148,49 @@ namespace QotomReview
             cpuTemperatureTimer.Tick += new EventHandler(CpuTemperatureTimerTick);
             cpuTemperatureTimer.Interval = TimeSpan.FromSeconds(2);
             cpuTemperatureTimer.Start();
+
+            if(comIsStartUp && open_all_com.IsEnabled)
+            {
+                OpenAllSerialPort(open_all_com, new RoutedEventArgs());
+            }
+            if(audioIsStartUp)
+            {
+                OpenAudioClick(open_audio, new RoutedEventArgs());
+            }
+            
         }
+        //设备插拔改变函数
+        private IntPtr DeveiceChanged(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            //Windows系统消息类型:设备改变
+            if (msg == WM_DEVICECHANGE)
+            {
+                //获取具体的设备事件类型
+                switch (wParam.ToInt32())
+                {
+                    //U盘插入事件
+                    case DBT_DEVICEARRIVAL:
+                        DriveInfo[] s = DriveInfo.GetDrives();
+                        foreach (DriveInfo drive in s)
+                        {
+                            if (drive.DriveType == DriveType.Removable)
+                            {
+                                //Console.WriteLine(string.Format("U盘已插入，盘符是" + drive.Name.ToString()));
+                                Reload_Click(reload, new RoutedEventArgs());
+                                break;
+                            }
+                        }
+                        break;
+                    //设备卸载事件
+                    case DBT_DEVICEREMOVECOMPLETE:
+                        //Console.WriteLine("检测到设备卸载");
+                        Reload_Click(reload, new RoutedEventArgs());
+                        break;
+                }
+            }
+            return IntPtr.Zero;
+        }
+
 
         void ReadConfig()
         {
@@ -623,7 +699,9 @@ namespace QotomReview
             AllComWindow w1 = new AllComWindow(baudRate.Text, dataBits.Text,
                 stopBits.Text, parity.Text, handShake.Text)
             {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                Left = 10,
+                Top = 10
             };
             w1.Closed += new EventHandler(ComWindowClosed);
             open_com.IsEnabled = false;
@@ -633,8 +711,35 @@ namespace QotomReview
 
         private void ComWindowClosed(object sender, EventArgs e)
         {
-            open_com.IsEnabled = true;
-            open_all_com.IsEnabled = true;
+            if (SerialPort.GetPortNames().Length >= 1)
+            {
+                open_com.IsEnabled = true;
+                open_all_com.IsEnabled = true;
+            }
+        }
+
+        private void Audio_start_Click(object sender, RoutedEventArgs e)
+        {
+            if(audio_start.IsChecked == false)
+            {
+                Computer.Writeini("Audio", "startup", "0", iniPath);
+            }
+            else
+            {
+                Computer.Writeini("Audio", "startup", "1", iniPath);
+            }
+        }
+
+        private void Com_start_Click(object sender, RoutedEventArgs e)
+        {
+            if(com_start.IsChecked == false)
+            {
+                Computer.Writeini("COM", "startup", "0", iniPath);
+            }
+            else
+            {
+                Computer.Writeini("COM", "startup", "1", iniPath);
+            }
         }
     }
 }

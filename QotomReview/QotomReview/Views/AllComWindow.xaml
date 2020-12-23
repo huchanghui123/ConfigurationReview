@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview.Views"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="450" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="COM Test" Height="450" Width="450" ResizeMode="CanMinimize" Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid x:Name="SpGrid" HorizontalAlignment="Left" VerticalAlignment="Top">
         
     </Grid>

@@ -67,14 +67,14 @@
             <StackPanel Canvas.Left="-50" Canvas.Top="5" Width="805" >
                 <StackPanel Orientation="Horizontal">
                     <Border BorderBrush="Gray" BorderThickness="1">
-                    <StackPanel Width="480" HorizontalAlignment="Left" Margin="2,0,0,0">
-                        <TextBlock x:Name="os" Text="Loading..." />
-                        <TextBlock x:Name="os_type" Text="Loading..." Margin="0,5,0,0"/>
-                        <TextBlock x:Name="os_language" Text="Loading..." Margin="0,5,0,0"/>
-                        <TextBlock x:Name="cpu" Text="Loading..." Margin="0,5,0,0"/>
-                        <TextBlock x:Name="mb" Text="Loading..." Margin="0,5,0,0"/>
-                        <TextBlock x:Name="bios" Text="Loading..." Margin="0,5,0,0"/>
-                    </StackPanel>
+                        <StackPanel Width="480" HorizontalAlignment="Left" Margin="2,0,0,0">
+                            <TextBlock x:Name="os" Text="Loading..." />
+                            <TextBlock x:Name="os_type" Text="Loading..." Margin="0,5,0,0"/>
+                            <TextBlock x:Name="os_language" Text="Loading..." Margin="0,5,0,0"/>
+                            <TextBlock x:Name="cpu" Text="Loading..." Margin="0,5,0,0"/>
+                            <TextBlock x:Name="mb" Text="Loading..." Margin="0,5,0,0"/>
+                            <TextBlock x:Name="bios" Text="Loading..." Margin="0,5,0,0"/>
+                        </StackPanel>
                     </Border>
                     <ListView x:Name="temperatureList" Height="160" Width="318" Margin="2,0,0,0"
                               BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
@@ -170,16 +170,21 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                    
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+
+                <StackPanel Orientation="Horizontal" Margin="0,10,275,0">
                     <Button Content="保存当前配置" Click="SaveConfigClick" Width="110" />
                     <CheckBox x:Name="check" IsChecked="True" IsEnabled="False" Content="对比上一次配置" Margin="10,0,0,0"
                               VerticalContentAlignment="Center" />
                     <TextBlock x:Name="save_config" Text="加载配置..." Margin="20,0,0,0"/>
-                    <Button Content="删除配置" Click="DeleteConfigClick" Width="80" Margin="20,0,0,0"/>
-                    <Button Content="打开声音" Click="OpenAudioClick" Width="80" Margin="20,0,0,0"/>
+                    <Button Content="删除配置" Click="DeleteConfigClick" Width="70" Margin="20,0,0,0"/>
+                    <Button x:Name="open_audio" Content="声音面板" Click="OpenAudioClick" Width="70" Margin="10,0,0,0"/>
                 </StackPanel>
             </StackPanel>
+            <StackPanel Canvas.Top="725" Canvas.Left="480">
+                <CheckBox x:Name="audio_start" Content="声音自启" IsChecked="False" Click="Audio_start_Click" />
+                <CheckBox x:Name="com_start" Content="串口自启" IsChecked="False" Click="Com_start_Click"/>
+            </StackPanel>
+
             <Button Content="快捷修改" Width="80" Height="50" Click="Fast_Click" Canvas.Left="550" Canvas.Top="615" />
             <Button x:Name="reload" Canvas.Left="670" Canvas.Top="615" Width="80" Height="50"
                     MouseEnter="My_MouseEnter" MouseLeave="My_MouseLeave" Click="Reload_Click">
@@ -197,7 +202,7 @@
                 </Button.Template>
             </Button>
             <Button x:Name="open_com" Content="打开串口" Click="OpenSerialPort" Width="80" Canvas.Left="550" Canvas.Top="685" />
-            <Button x:Name="open_all_com" Content="打开全部" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="685" />
+            <Button x:Name="open_all_com" Content="打开全部" IsEnabled="False" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="685" />
         </Canvas>
 
     </Grid>

@@ -7,9 +7,10 @@ using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Windows;
+using System.Runtime.InteropServices;
+using System.Text;
 
-namespace QotomReview.Tool
+namespace QotomReview.Tools
 {
     public class Computer
     {
@@ -350,6 +351,36 @@ namespace QotomReview.Tool
 
             return networkDateTime; // without ToLocalTime() = faster
             //return networkDateTime.ToLocalTime(); // without ToLocalTime() = faster
+        }
+
+        [DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+        [DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
+        /// <summary>
+        /// 读取ini
+        /// </summary>
+        /// <param name="group">数据分组</param>
+        /// <param name="key">关键字</param>
+        /// <param name="filepath">init文件地址</param>
+        /// <returns>关键字对应的值，没有时含有默认值</returns>
+        public static string Readini(string group, string key, string default_value, string filepath)
+        {
+            StringBuilder temp = new StringBuilder();
+            GetPrivateProfileString(group, key, default_value, temp, 255, filepath);
+            return temp.ToString();
+        }
+
+        /// <summary>
+        /// 存储ini
+        /// </summary>
+        /// <param name="group">数据分组</param>
+        /// <param name="key">关键字</param>
+        /// <param name="value">关键字对应的值</param>
+        /// <param name="filepath">ini文件地址</param>
+        public static void Writeini(string group, string key, string value, string filepath)
+        {
+            WritePrivateProfileString(group, key, value, filepath);
         }
     }
 }

@@ -3,7 +3,7 @@ using QotomReview.model;
 using System;
 using System.Collections.Generic;
 
-namespace QotomReview.Tools
+namespace QotomReview.Tool
 {
     public class CpuTemperatureReader : IDisposable
     {

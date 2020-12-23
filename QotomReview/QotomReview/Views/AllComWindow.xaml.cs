@@ -161,7 +161,7 @@ namespace QotomReview.Views
             TextBox textBox = CreateTextBox();
 
             panelX = index * defaultWidth == 0 ? 10 : index * defaultWidth + 10;
-            Console.WriteLine("panelX:{0} panelY:{1}", panelX, panelY);
+            //Console.WriteLine("panelX:{0} panelY:{1}", panelX, panelY);
             panel.Margin = new Thickness(panelX, panelY, 0, 0);
             panel.Width = defaultWidth - 10;
             panel.Height = defaultHeight;
