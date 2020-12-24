@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview"
         mc:Ignorable="d"
-        Title="Ootom Review V1.02" Height="800" Width="930"
+        Title="千度工控电脑简单测试软件 V1.02" Height="800" Width="930"
         Closing="OnClosing" ResizeMode="CanMinimize" Loaded="Window_Loaded">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock }" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -202,7 +202,7 @@
                 </Button.Template>
             </Button>
             <Button x:Name="open_com" Content="打开串口" Click="OpenSerialPort" Width="80" Canvas.Left="550" Canvas.Top="685" />
-            <Button x:Name="open_all_com" Content="打开全部" IsEnabled="False" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="685" />
+            <Button x:Name="open_all_com" Content="打开全部" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="685" />
         </Canvas>
 
     </Grid>
