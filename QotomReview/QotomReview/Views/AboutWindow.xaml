@@ -1,0 +1,42 @@
+﻿<Window x:Class="QotomReview.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QotomReview.Views"
+        mc:Ignorable="d"
+        Title="关于 QotomReview" Height="405" Width="400">
+    <Grid>
+        <DockPanel>
+            <Image DockPanel.Dock="Top" Source="../Resources/a_bg.png" Margin="0,0,-5,0" />
+            <StackPanel DockPanel.Dock="Top" Margin="10,0" Height="250">
+                <TextBlock Text="Qotom Review" FontWeight="Bold" Margin="0,5,0,0" />
+                <TextBlock Text="Copyright(c) 2020 Qotom, Inc. All right reserved." Margin="0,5,0,0"/>
+                <GroupBox Header="产品信息" Margin="0,5,0,0">
+                    <StackPanel >
+                        <TextBlock Text="产品：Qotom Review" Margin="0,10,0,0"/>
+                        <TextBlock Text="版本：Release 1.02" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="附加信息" Margin="0,5,0,0">
+                    <StackPanel >
+                        <TextBlock x:Name="os" Text="操作系统：" Margin="0,10,0,0"/>
+                        <TextBlock x:Name="os_version" Text="系统版本：" Margin="0,10,0,0" />
+                        <TextBlock Text="http://www.qotom.com" Margin="0,10,0,0" />
+                        <TextBlock Text="mailto:support@qotom.com" Margin="0,10,0,0" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+            <StatusBar DockPanel.Dock="Bottom"/>
+                <StatusBarItem Margin="10,0,0,0">
+                    <TextBlock>
+                        <Run>更新：</Run>
+                        <Hyperlink NavigateUri="http://www.qotom.shop/download/Tools/QotomReview/" RequestNavigate="Hyperlink_RequestNavigate">http://www.qotom.shop/download/Tools</Hyperlink>
+                    </TextBlock>
+                </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right" Margin="0,0,10,0" >
+                <Button Content="确定" Width="50" Click="Button_Click"/>
+            </StatusBarItem>
+        </DockPanel>
+    </Grid>
+</Window>

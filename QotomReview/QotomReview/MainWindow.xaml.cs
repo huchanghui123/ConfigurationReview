@@ -49,6 +49,9 @@ namespace QotomReview
         public const int DBT_DEVICEARRIVAL = 0x8000;            //系统检测到设备已经插入，并且已经处于可用转态
         public const int DBT_DEVICEREMOVECOMPLETE = 0x8004;     //系统检测到设备已经卸载或者拔出
 
+        private string os_name = "";
+        private string os_version = "";
+
         static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "qotom_config.xml";
         static readonly string iniPath = System.AppDomain.CurrentDomain.BaseDirectory + "qotom_review.ini";
 
@@ -278,6 +281,8 @@ namespace QotomReview
             Console.WriteLine("InfoThread.....");
             string systemVer = Computer.GetSystemVersion();
             string systemType = Computer.GetSystemType("SystemType");
+            os_name = systemVer;
+            os_version = systemType;
             string cpuName = Computer.GetCpuName();
             string language = System.Threading.Thread.CurrentThread.CurrentCulture.Name + " " +
                 System.Globalization.CultureInfo.InstalledUICulture.NativeName;
@@ -720,6 +725,7 @@ namespace QotomReview
 
         private void Audio_start_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("Audio_start_Click........."+ audio_start.IsChecked);
             if(audio_start.IsChecked == false)
             {
                 Computer.Writeini("Audio", "startup", "0", iniPath);
@@ -732,7 +738,8 @@ namespace QotomReview
 
         private void Com_start_Click(object sender, RoutedEventArgs e)
         {
-            if(com_start.IsChecked == false)
+            Console.WriteLine("Com_start_Click........." + com_start.IsChecked);
+            if (com_start.IsChecked == false)
             {
                 Computer.Writeini("COM", "startup", "0", iniPath);
             }
@@ -740,6 +747,15 @@ namespace QotomReview
             {
                 Computer.Writeini("COM", "startup", "1", iniPath);
             }
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            AboutWindow aw = new AboutWindow(os_name, os_version)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            aw.ShowDialog();
         }
     }
 }
