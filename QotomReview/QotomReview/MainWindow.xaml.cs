@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -71,8 +72,38 @@ namespace QotomReview
                 IsBackground = true
             };
             //nt.Start();
+            
+            if(!File.Exists(iniPath))
+            {
+                //Compare:0不对比，1对比；startup:0不启动，1启动
+                Computer.Writeini("Compare", "Compare", "1",iniPath);
+                Computer.Writeini("COM","startup", "0",iniPath);
+                Computer.Writeini("Audio","startup", "0",iniPath);
+            }
+            else
+            {
+                string compareValue = Computer.Readini("Compare", "Compare", "1", iniPath);
+                string comValue = Computer.Readini("COM", "startup", "0", iniPath);
+                string audioValue = Computer.Readini("Audio", "startup", "0", iniPath);
+                compared = Convert.ToInt16(compareValue) == 0 ? false : true;
+                comIsStartUp = Convert.ToInt16(comValue) == 0 ? false : true;
+                audioIsStartUp = Convert.ToInt16(audioValue) == 0 ? false : true;
+                if(compared)
+                {
+                    check.IsChecked = compared;
+                }
+                if(comIsStartUp)
+                {
+                    com_start.IsChecked = comIsStartUp;
+                }
+                if(audioIsStartUp)
+                {
+                    audio_start.IsChecked = audioIsStartUp;
+                }
 
-            compared = check.IsChecked == true ? true : false;
+                //Console.WriteLine("compareValue:{0}, compared:{1}, comValue:{2}, comIsStartUp:{3}, audioValue:{4}, audioIsStartUp:{5}",
+                //    compareValue, compared, comValue, comIsStartUp, audioValue, audioIsStartUp);
+            }
             if (compared)
             {
                 read = new Thread(ReadConfig)
@@ -85,30 +116,6 @@ namespace QotomReview
             {
                 it.Start();
                 nt.Start();
-            }
-            if(!File.Exists(iniPath))
-            {
-                //0不启动，1启动
-                Computer.Writeini("COM","startup", "0",iniPath);
-                Computer.Writeini("Audio","startup", "0",iniPath);
-            }
-            else
-            {
-                string comValue = Computer.Readini("COM", "startup", "0", iniPath);
-                string audioValue = Computer.Readini("Audio", "startup", "0", iniPath);
-                comIsStartUp = Convert.ToInt16(comValue) == 0 ? false : true;
-                audioIsStartUp = Convert.ToInt16(audioValue) == 0 ? false : true;
-                if(comIsStartUp)
-                {
-                    com_start.IsChecked = comIsStartUp;
-                }
-                if(audioIsStartUp)
-                {
-                    audio_start.IsChecked = audioIsStartUp;
-                }
-
-                //Console.WriteLine("value1:{0} value2:{1} comIsStartUp:{2} audioIsStartUp:{3}",
-                //    comValue, audioValue, comIsStartUp, audioIsStartUp);
             }
 
         }
@@ -203,16 +210,16 @@ namespace QotomReview
                 old_config = SaveXml.ReadConfigurationFromXml(configPath);
                 this.Dispatcher.Invoke((Action)delegate ()
                 {
-                    save_config.Text = "读取中...";
+                    status_info.Text = "读取中...";
                     if (old_config == null)
                     {
-                        save_config.Text = "读取配置失败!";
-                        save_config.Foreground = Brushes.Red;
+                        status_info.Text = "读取配置失败!";
+                        status_info.Foreground = Brushes.Red;
                     }
                     else
                     {
-                        save_config.Text = "读取配置成功!";
-                        save_config.Foreground = Brushes.Black;
+                        status_info.Text = "读取配置成功!";
+                        status_info.Foreground = Brushes.Black;
                     }
                 });
             }
@@ -220,8 +227,8 @@ namespace QotomReview
             {
                 this.Dispatcher.Invoke((Action)delegate ()
                 {
-                    save_config.Text = "找不到配置!";
-                    save_config.Foreground = Brushes.Red;
+                    status_info.Text = "找不到配置!";
+                    status_info.Foreground = Brushes.Red;
                 });
                 compared = false;
             }
@@ -287,14 +294,15 @@ namespace QotomReview
             string language = System.Threading.Thread.CurrentThread.CurrentCulture.Name + " " +
                 System.Globalization.CultureInfo.InstalledUICulture.NativeName;
             string account = Computer.GetSystemType("Name");
-            string boardType = Computer.GetBoardType();
+            //string boardType = Computer.GetBoardType();
+            string boardType = Computer.GetVieoController();
             string biosVer = Computer.GetBios();
 
             config.OSVer = systemVer;
             config.OSType = systemType;
             config.Processor = cpuName;
             config.Language = language;
-            config.Motherboard = boardType;
+            config.VideoController = boardType;
             config.BIOS = biosVer;
 
             this.Dispatcher.Invoke((Action)delegate ()
@@ -303,40 +311,51 @@ namespace QotomReview
                 os_type.Text = systemType;
                 cpu.Text = cpuName;
                 os_language.Text = language;
-                mb.Text = boardType;
+                video.Text = boardType;
                 bios.Text = biosVer;
                 os.Foreground = Brushes.Black;
                 os_type.Foreground = Brushes.Black;
                 cpu.Foreground = Brushes.Black;
                 os_language.Foreground = Brushes.Black;
-                mb.Foreground = Brushes.Black;
+                video.Foreground = Brushes.Black;
                 bios.Foreground = Brushes.Black;
+                if(boardType.Contains("Microsoft"))
+                {
+                    video.FontWeight = FontWeights.Bold;
+                }
 
                 if (compared && old_config != null)
                 {
-                    if (!old_config.OSVer.Equals(systemVer))
+                    try
                     {
-                        os.Foreground = Brushes.Red;
+                        if (!old_config.OSVer.Equals(systemVer))
+                        {
+                            os.Foreground = Brushes.Red;
+                        }
+                        if (!old_config.OSType.Equals(systemType))
+                        {
+                            os_type.Foreground = Brushes.Red;
+                        }
+                        if (!old_config.Processor.Equals(cpuName))
+                        {
+                            cpu.Foreground = Brushes.Red;
+                        }
+                        if (!old_config.Language.Equals(language))
+                        {
+                            os_language.Foreground = Brushes.Red;
+                        }
+                        if (!old_config.VideoController.Equals(boardType))
+                        {
+                            video.Foreground = Brushes.Red;
+                        }
+                        if (!old_config.BIOS.Equals(biosVer))
+                        {
+                            bios.Foreground = Brushes.Red;
+                        }
                     }
-                    if (!old_config.OSType.Equals(systemType))
+                    catch (Exception)
                     {
-                        os_type.Foreground = Brushes.Red;
-                    }
-                    if (!old_config.Processor.Equals(cpuName))
-                    {
-                        cpu.Foreground = Brushes.Red;
-                    }
-                    if (!old_config.Language.Equals(language))
-                    {
-                        os_language.Foreground = Brushes.Red;
-                    }
-                    if (!old_config.Motherboard.Equals(boardType))
-                    {
-                        mb.Foreground = Brushes.Red;
-                    }
-                    if (!old_config.BIOS.Equals(biosVer))
-                    {
-                        bios.Foreground = Brushes.Red;
+
                     }
                 }
                 input_name.Text = account;
@@ -612,12 +631,12 @@ namespace QotomReview
             try
             {
                 SaveXml.SaveConfigurationToXml(config, configPath);
-                save_config.Text = "保存当前配置成功!";
+                status_info.Text = "保存当前配置成功!";
             }
             catch (Exception)
             {
-                save_config.Text = "保存当前配置失败!";
-                save_config.Foreground = Brushes.Red;
+                status_info.Text = "保存当前配置失败!";
+                status_info.Foreground = Brushes.Red;
             }
         }
 
@@ -627,7 +646,7 @@ namespace QotomReview
             if (System.IO.File.Exists(configPath))
             {
                 System.IO.File.Delete(configPath);
-                save_config.Text = "配置已删除!";
+                status_info.Text = "配置已删除!";
             }
         }
 
@@ -675,15 +694,21 @@ namespace QotomReview
         {
             Console.WriteLine("Reload_Click..............");
             //清空配置，重新读取
-            save_config.Text = "读取中...";
+            status_info.Text = "读取中...";
             old_config = null;
-            compared = check.IsChecked == true ? true : false;
+            string compareValue = Computer.Readini("Compare", "Compare", "1", iniPath);
+            compared = Convert.ToInt16(compareValue) == 0 ? false : true;
             ReadConfig();
         }
 
         private void OpenAudioClick(object sender, RoutedEventArgs e)
         {
             Process.Start("mmsys.cpl");
+        }
+
+        private void OpenSysteminfoClick(object sender, RoutedEventArgs e)
+        {
+            Process.Start("msinfo32.exe");
         }
 
         private void OpenSerialPort(object sender, RoutedEventArgs e)
@@ -725,7 +750,6 @@ namespace QotomReview
 
         private void Audio_start_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Audio_start_Click........."+ audio_start.IsChecked);
             if(audio_start.IsChecked == false)
             {
                 Computer.Writeini("Audio", "startup", "0", iniPath);
@@ -738,7 +762,6 @@ namespace QotomReview
 
         private void Com_start_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Com_start_Click........." + com_start.IsChecked);
             if (com_start.IsChecked == false)
             {
                 Computer.Writeini("COM", "startup", "0", iniPath);
@@ -746,6 +769,18 @@ namespace QotomReview
             else
             {
                 Computer.Writeini("COM", "startup", "1", iniPath);
+            }
+        }
+
+        private void CompareClick(object sender, RoutedEventArgs e)
+        {
+            if(check.IsChecked == false)
+            {
+                Computer.Writeini("Compare", "Compare", "0", iniPath);
+            }
+            else
+            {
+                Computer.Writeini("Compare", "Compare", "1", iniPath);
             }
         }
 

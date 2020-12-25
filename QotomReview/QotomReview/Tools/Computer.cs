@@ -126,6 +126,28 @@ namespace QotomReview.Tools
             }
         }
 
+        public static string GetVieoController()
+        {
+            try
+            {
+                var st = string.Empty;
+                var mos = new ManagementObjectSearcher("Select * from Win32_VideoController");
+                foreach (var o in mos.Get())
+                {
+                    var mo = (ManagementObject)o;
+                    st = mo["Caption"].ToString();// + " " + mo["AdapterCompatibility"].ToString();
+                }
+
+                mos.Dispose();
+                return st;
+            }
+
+            catch (Exception)
+            {
+                return "unknown";
+            }
+        }
+
         //内存信息
         public static List<BaseData> GetMemoryInfo()
         {
@@ -266,7 +288,7 @@ namespace QotomReview.Tools
                     
                     string mac = string.Join("-", (from z in adapter.GetPhysicalAddress().GetAddressBytes() select z.ToString("X2")).ToArray());
                     //Console.WriteLine("mac:" + mac);
-                    if(!isEthernet && !isWireless)
+                    if((!isEthernet && !isWireless)|| adapter.Description.Contains("Virtual"))
                     {
                         continue;
                     }

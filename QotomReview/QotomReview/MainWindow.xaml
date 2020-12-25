@@ -22,6 +22,10 @@
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
+        <Style TargetType="{x:Type CheckBox }">
+            <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
 
         <Style TargetType="{x:Type ListViewItem}">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
@@ -40,27 +44,37 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Canvas Grid.Column="0" Grid.ColumnSpan="1">
-            <DockPanel>
-                <ToolBar DockPanel.Dock="Top" Width="925" Background="White"> 
-                        <Menu Background="White">
-                            <MenuItem Header="设置" Background="White" VerticalAlignment="Center">
-                                <CheckBox x:Name="audio_start" Content="声音自启动" Click="Audio_start_Click"  />
-                                <Separator />
-                                <CheckBox x:Name="com_start" Content="串口自启动" Click="Com_start_Click"/>
-                            </MenuItem>
-                        </Menu>
+        </Grid.ColumnDefinitions>-->
+        <DockPanel>
+            <ToolBar DockPanel.Dock="Top" Width="925" Background="White">
+                <Menu Background="White" >
+                    <MenuItem x:Name="menu" Header="设置" Background="White" VerticalAlignment="Center" >
+                        <Button x:Name="save_con" BorderThickness="0" Background="Transparent" Content="保存当前配置" HorizontalContentAlignment="Left" Click="SaveConfigClick" />
                         <Separator />
-                        <Button Content="关于" Click="About_Click"/>
-                        <!--<Separator />
+                        <Button x:Name="del_con" BorderThickness="0" Background="Transparent" Content="删除当前配置" HorizontalContentAlignment="Left" Click="DeleteConfigClick" />
+                        <Separator />
+                        <CheckBox x:Name="check" VerticalContentAlignment="Center" Content="对比配置" Click="CompareClick"/>
+                    </MenuItem>
+                </Menu>
+                <Separator />
+                <Menu Background="White" >
+                    <MenuItem Header="自启动" Background="White" VerticalAlignment="Center" >
+                        <CheckBox x:Name="audio_start" Content="声音自启动" VerticalContentAlignment="Center" Click="Audio_start_Click"  />
+                        <Separator />
+                        <CheckBox x:Name="com_start" Content="串口自启动" VerticalContentAlignment="Center" Click="Com_start_Click"/>
+                        <Separator />
+                    </MenuItem>
+                </Menu>
+                <Separator />
+                <Button Content="关于" Click="About_Click"/>
+                <!--<Separator />
                         <Label>FontFamily:</Label>
                         <ComboBox>
                             <ComboBoxItem>微软雅黑</ComboBoxItem>
@@ -73,24 +87,21 @@
                             <ComboBoxItem>14</ComboBoxItem>
                             <ComboBoxItem>16</ComboBoxItem>
                         </ComboBox>-->
-                    </ToolBar>
-            </DockPanel>
-            <StackPanel Canvas.Left="-10" Canvas.Top="30" Width="100" FlowDirection="RightToLeft" >
-                <TextBlock Text=":系统版本" />
-                <TextBlock Text=":系统类型" Margin="0,5,0,0"/>
-                <TextBlock Text=":系统语言" Margin="0,5,0,0"/>
-                <TextBlock Text=":处理器" Margin="0,5,0,0"/>
-                <TextBlock Text=":主板型号" Margin="0,5,0,0"/>
-                <TextBlock Text=":BIOS版本" Margin="0,5,0,0"/>
-                <TextBlock Text=":内存信息" Margin="0,5,0,0" />
-                <TextBlock Text=":存储信息" Margin="0,60,0,0" />
-                <TextBlock Text=":网络信息" Margin="0,75,0,0" />
-                <TextBlock Text=":同步时钟" Margin="0,246.5,0,0" />
-                <TextBlock Text=":计算机名" Margin="0,11,0,0"/>
-            </StackPanel>
-        </Canvas>
-        <Canvas Grid.Column="1" Grid.ColumnSpan="5">
-            <StackPanel Canvas.Left="-50" Canvas.Top="30" Width="805" >
+            </ToolBar>
+            <StackPanel Margin="-5,0,0,0" Width="100" FlowDirection="RightToLeft" >
+                    <TextBlock Text=":系统版本" />
+                    <TextBlock Text=":系统类型" Margin="0,5,0,0"/>
+                    <TextBlock Text=":系统语言" Margin="0,5,0,0"/>
+                    <TextBlock Text=":处理器" Margin="0,5,0,0"/>
+                    <TextBlock Text=":显示适配器" Margin="0,5,0,0"/>
+                    <TextBlock Text=":BIOS版本" Margin="0,5,0,0"/>
+                    <TextBlock Text=":内存信息" Margin="0,5,0,0" />
+                    <TextBlock Text=":存储信息" Margin="0,60,0,0" />
+                    <TextBlock Text=":网络信息" Margin="0,75,0,0" />
+                    <TextBlock Text=":同步时钟" Margin="0,246.5,0,0" />
+                    <TextBlock Text=":计算机名" Margin="0,11,0,0"/>
+                </StackPanel>
+            <StackPanel Margin="5,0,0,0" Width="805" DockPanel.Dock="Top">
                 <StackPanel Orientation="Horizontal">
                     <Border BorderBrush="Gray" BorderThickness="1">
                         <StackPanel Width="480" HorizontalAlignment="Left" Margin="2,0,0,0">
@@ -98,7 +109,7 @@
                             <TextBlock x:Name="os_type" Text="Loading..." Margin="0,5,0,0"/>
                             <TextBlock x:Name="os_language" Text="Loading..." Margin="0,5,0,0"/>
                             <TextBlock x:Name="cpu" Text="Loading..." Margin="0,5,0,0"/>
-                            <TextBlock x:Name="mb" Text="Loading..." Margin="0,5,0,0"/>
+                            <TextBlock x:Name="video" Text="Loading..." Margin="0,5,0,0"/>
                             <TextBlock x:Name="bios" Text="Loading..." Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
@@ -160,76 +171,86 @@
                     </ListView.View>
                 </ListView>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="530" Margin="0,10,0,0">
-                    <TextBlock Text="服务器地址:" />
-                    <TextBox x:Name="ntp_server" Text="time.windows.com" Width="150" Margin="5,0,0,0"/>
-                    <Button x:Name="update_time" Content="同步" Width="50" Click="UpdateTimeClick" Margin="20,0,0,0"/>
-                    <TextBlock x:Name="local_time" Text="本地时间" Margin="20,0,0,0" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="530" Margin="0,10,0,0">
-                    <TextBlock Text="计算机名称:" />
-                    <TextBox x:Name="input_name" Text="Loading..." Width="150" Margin="5,0,0,0"/>
-                    <Button x:Name="generate_name" Content="生成" Click="GenerateNameClick" Width="50" Margin="20,0,0,0"/>
-                    <Button x:Name="update_name" Content="更新" Click="UpdateNameClick" Width="50" Margin="20,0,0,0"/>
-                    <TextBlock x:Name="reboot" Text="(需要重启)" Margin="10,0,0,0"/>
-                </StackPanel>
-                <!-- 串口 -->
-                <Border BorderBrush="Gray" BorderThickness="1" >
-                    <StackPanel Width="530" HorizontalAlignment="Left">
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <TextBlock Text="选择" Width="65"/>
-                            <TextBlock Text="速度" Width="70" Margin="10,0,0,0"/>
-                            <TextBlock Text="数据位" Width="50" Margin="10,0,0,0"/>
-                            <TextBlock Text="停止位" Width="80" Margin="10,0,0,0"/>
-                            <TextBlock Text="校验位" Width="80" Margin="10,0,0,0"/>
-                            <TextBlock Text="握手方式" Width="80" Margin="10,0,0,0"/>
-                            <CheckBox x:Name="rtsCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Width="550">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
+                            <TextBlock Text="服务器地址:" />
+                            <TextBox x:Name="ntp_server" Text="time.windows.com" Width="150" Margin="5,0,0,0"/>
+                            <Button x:Name="update_time" Content="同步" Width="50" Click="UpdateTimeClick" Margin="20,0,0,0"/>
+                            <TextBlock x:Name="local_time" Text="本地时间" Margin="20,0,0,0" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox x:Name="portName" Text="COM1" Width="65"/>
-                            <ComboBox x:Name="baudRate" Text="115200" IsEditable="True" Width="70" Margin="10,0,0,0"/>
-                            <ComboBox x:Name="dataBits" Text="8" IsEditable="True" Width="50" Margin="10,0,0,0"/>
-                            <ComboBox x:Name="stopBits" Text="1" Width="80" Margin="10,0,0,0"/>
-                            <ComboBox x:Name="parity" Text="1" Width="80" Margin="10,0,0,0"/>
-                            <ComboBox x:Name="handShake" Text="1" Width="80" Margin="10,0,0,0"/>
-                            <CheckBox x:Name="dtrCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
+                            <TextBlock Text="计算机名称:" />
+                            <TextBox x:Name="input_name" Text="Loading..." Width="150" Margin="5,0,0,0"/>
+                            <Button x:Name="generate_name" Content="生成" Click="GenerateNameClick" Width="50" Margin="20,0,0,0"/>
+                            <Button x:Name="update_name" Content="更新" Click="UpdateNameClick" Width="50" Margin="20,0,0,0"/>
+                            <TextBlock x:Name="reboot" Text="(需要重启)" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="251">
+                        <Button Content="快捷修改" Width="80" Height="50" Click="Fast_Click" Margin="30,0,0,0" />
+                        <Button x:Name="reload" Width="80" Height="50" MouseEnter="My_MouseEnter" 
+                                MouseLeave="My_MouseLeave" Click="Reload_Click" Margin="50,0,0,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentControl>
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                            <Grid>
+                                                <Image Source="./Resources/reload_128px.png" Stretch="Uniform"/>
+                                                <TextBlock Text="刷新" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </ContentControl>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 串口 -->
+                <Border BorderBrush="Gray" BorderThickness="1" Margin="0,5">
+                    <StackPanel Orientation="Horizontal" Height="55">
+                        <StackPanel>
+                            <!--串口配置项-->
+                            <StackPanel Width="550" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <TextBlock Text="选择" Width="65"/>
+                                    <TextBlock Text="速度" Width="70" Margin="10,0,0,0"/>
+                                    <TextBlock Text="数据位" Width="50" Margin="10,0,0,0"/>
+                                    <TextBlock Text="停止位" Width="80" Margin="10,0,0,0"/>
+                                    <TextBlock Text="校验位" Width="80" Margin="10,0,0,0"/>
+                                    <TextBlock Text="握手方式" Width="80" Margin="10,0,0,0"/>
+                                    <CheckBox x:Name="rtsCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" >
+                                    <ComboBox x:Name="portName" Text="COM1" Width="65"/>
+                                    <ComboBox x:Name="baudRate" Text="115200" IsEditable="True" Width="70" Margin="10,0,0,0"/>
+                                    <ComboBox x:Name="dataBits" Text="8" IsEditable="True" Width="50" Margin="10,0,0,0"/>
+                                    <ComboBox x:Name="stopBits" Text="1" Width="80" Margin="10,0,0,0"/>
+                                    <ComboBox x:Name="parity" Text="1" Width="80" Margin="10,0,0,0"/>
+                                    <ComboBox x:Name="handShake" Text="1" Width="80" Margin="10,0,0,0"/>
+                                    <CheckBox x:Name="dtrCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <StackPanel Width="255">
+                            <Canvas Margin="30,0,0,0">
+                                <Button x:Name="open_com" Content="打开端口" Click="OpenSerialPort" Width="80" Canvas.Top="5"/>
+                                <Button x:Name="open_all_com" Content="全部打开" Click="OpenAllSerialPort" Width="80" Canvas.Top="30"/>
+                                <Button x:Name="open_audio" Content="声音面板" Click="OpenAudioClick" Width="80" Canvas.Left="110" Canvas.Top="5"/>
+                                <Button x:Name="open_systeminfo" Content="系统信息" Click="OpenSysteminfoClick" Width="80" Canvas.Left="110" Canvas.Top="30"/>
+                            </Canvas>
                         </StackPanel>
                     </StackPanel>
                 </Border>
-
-                <StackPanel Orientation="Horizontal" Margin="0,10,275,0">
-                    <Button Content="保存当前配置" Click="SaveConfigClick" Width="110" />
-                    <CheckBox x:Name="check" IsChecked="True" IsEnabled="False" Content="对比上一次配置" Margin="10,0,0,0"
-                              VerticalContentAlignment="Center" />
-                    <TextBlock x:Name="save_config" Text="加载配置..." Margin="20,0,0,0"/>
-                    <Button Content="删除配置" Click="DeleteConfigClick" Width="70" Margin="20,0,0,0"/>
-                    <Button x:Name="open_audio" Content="声音面板" Click="OpenAudioClick" Width="70" Margin="20,0,0,0"/>
-                </StackPanel>
+                
             </StackPanel>
-            <!--<StackPanel Canvas.Top="750" Canvas.Left="480">
-                <CheckBox x:Name="audio_start" Content="声音自启" IsChecked="False" Click="Audio_start_Click" />
-                <CheckBox x:Name="com_start" Content="串口自启" IsChecked="False" Click="Com_start_Click"/>
-            </StackPanel>-->
-
-            <Button Content="快捷修改" Width="80" Height="50" Click="Fast_Click" Canvas.Left="550" Canvas.Top="640" />
-            <Button x:Name="reload" Canvas.Left="670" Canvas.Top="640" Width="80" Height="50"
-                    MouseEnter="My_MouseEnter" MouseLeave="My_MouseLeave" Click="Reload_Click">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <ContentControl>
-                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                <Grid>
-                                    <Image Source="./Resources/reload_128px.png" Stretch="Uniform"/>
-                                    <TextBlock Text="刷新" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-                        </ContentControl>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-            <Button x:Name="open_com" Content="打开端口" Click="OpenSerialPort" Width="80" Canvas.Left="550" Canvas.Top="710" />
-            <Button x:Name="open_all_com" Content="全部打开" Click="OpenAllSerialPort" Width="80" Canvas.Left="670" Canvas.Top="710" />
-        </Canvas>
+            <StatusBar DockPanel.Dock="Bottom" Background="Transparent">
+                <TextBlock x:Name="status_info" Text="加载配置..." Margin="10,0,0,0"/>
+            </StatusBar>
+        </DockPanel>
+        
 
     </Grid>
 </Window>

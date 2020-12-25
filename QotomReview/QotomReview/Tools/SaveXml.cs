@@ -33,8 +33,8 @@ namespace QotomReview.Tools
             processor.InnerText = data.Processor;
             config.AppendChild(processor);
 
-            XmlElement mb = doc.CreateElement("Motherboard");
-            mb.InnerText = data.Motherboard;
+            XmlElement mb = doc.CreateElement("VideoController");
+            mb.InnerText = data.VideoController;
             config.AppendChild(mb);
 
             XmlElement bios_ver = doc.CreateElement("BIOS");
@@ -136,9 +136,9 @@ namespace QotomReview.Tools
                     {
                         config.Processor = xe.InnerText;
                     }
-                    else if (xe.Name.Equals("Motherboard"))
+                    else if (xe.Name.Equals("VideoController"))
                     {
-                        config.Motherboard = xe.InnerText;
+                        config.VideoController = xe.InnerText;
                     }
                     else if (xe.Name.Equals("BIOS"))
                     {
