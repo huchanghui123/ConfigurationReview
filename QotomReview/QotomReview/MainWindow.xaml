@@ -44,14 +44,6 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <!--<Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>-->
         <DockPanel>
             <ToolBar DockPanel.Dock="Top" Width="925" Background="White">
                 <Menu Background="White" >

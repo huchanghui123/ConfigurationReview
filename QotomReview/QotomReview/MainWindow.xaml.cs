@@ -416,13 +416,13 @@ namespace QotomReview
             }
             //USB信息获取
             List<BaseData> usbList = Computer.GetUSBInfo();
-            if (usbList != null && usbList.Count > 0)
-            {
+            //if (usbList != null && usbList.Count > 0)
+            //{
                 this.Dispatcher.Invoke((Action)delegate ()
                 {
                     usb_list.ItemsSource = usbList;
                 });
-            }
+            //}
 
             //磁盘信息获取
             List<BaseData> diskList = Computer.GetDiskInfo();
