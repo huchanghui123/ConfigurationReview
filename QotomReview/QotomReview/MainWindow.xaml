@@ -8,11 +8,6 @@
         Title="千度工控电脑简单测试软件 V1.02" Height="815" Width="930"
         Closing="OnClosing" ResizeMode="CanMinimize" Loaded="Window_Loaded">
     <Window.Resources>
-        <!--<Style TargetType="{x:Type TextBlock }">
-            <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Height" Value="22"/>
-        </Style>-->
         <Style TargetType="{x:Type TextBox }">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
             <Setter Property="FontSize" Value="14"/>
@@ -28,8 +23,6 @@
         </Style>
 
         <Style TargetType="{x:Type ListViewItem}">
-            <!--<Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
-            <Setter Property="FontSize" Value="15"/>-->
             <Setter Property="Height" Value="24"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Check}" Value="error">
@@ -46,36 +39,43 @@
     <Grid>
         <DockPanel>
             <ToolBar DockPanel.Dock="Top" Width="925" Background="White">
-                <Menu Background="White" >
-                    <MenuItem x:Name="menu" Header="设置" Background="White" VerticalAlignment="Center" >
-                        <Button x:Name="save_con" BorderThickness="0" Background="Transparent" Content="保存当前配置" HorizontalContentAlignment="Left" Click="SaveConfigClick" />
+                <Menu Background="White" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" TextBlock.FontSize="14">
+                    <MenuItem x:Name="menu_conf" Header="设置" Background="White" >
+                        <MenuItem Header="保存当前配置" Click="SaveConfigClick" VerticalContentAlignment="Center">
+                            <MenuItem.Icon>
+                                <Image Source="./Resources/save_20px.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <Separator />
-                        <Button x:Name="del_con" BorderThickness="0" Background="Transparent" Content="删除当前配置" HorizontalContentAlignment="Left" Click="DeleteConfigClick" />
+                        <MenuItem Header="删除当前配置" Click="DeleteConfigClick" VerticalContentAlignment="Center">
+                            <MenuItem.Icon>
+                                <Image Source="./Resources/delete_20px.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <Separator />
                         <CheckBox x:Name="check" VerticalContentAlignment="Center" Content="对比配置" Click="CompareClick"/>
                     </MenuItem>
                 </Menu>
                 <Separator />
                 <Menu Background="White" >
-                    <MenuItem Header="自启动" Background="White" VerticalAlignment="Center" >
-                        <CheckBox x:Name="audio_start" Content="声音自启动" VerticalContentAlignment="Center" Click="Audio_start_Click"  />
+                    <MenuItem Header="自启动" Background="White" VerticalAlignment="Center" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" TextBlock.FontSize="14">
+                        <CheckBox x:Name="audio_start" Content="声音自启动" VerticalContentAlignment="Center" Click="Audio_start_Click"/>
                         <Separator />
                         <CheckBox x:Name="com_start" Content="串口自启动" VerticalContentAlignment="Center" Click="Com_start_Click"/>
-                        <Separator />
                     </MenuItem>
                 </Menu>
                 <Separator />
-                <Menu Background="White" >
+                <Menu Background="White" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" TextBlock.FontSize="14">
                     <MenuItem Header="字体" Background="White" VerticalAlignment="Center" >
-                        <ComboBox x:Name="font_family" />
+                        <ComboBox x:Name="font_family"/>
                         <Separator />
                         <ComboBox x:Name="font_size" />
                         <Separator />
-                        <Button BorderThickness="0" Background="Transparent" Content="确认" HorizontalContentAlignment="Left" Click="Font_Click" />
+                        <MenuItem Header="确认" Click="Font_Click" />
                     </MenuItem>
                 </Menu>
                 <Separator />
-                <Button Content="关于" Click="About_Click"/>
+                <Button Content="关于" Click="About_Click" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" TextBlock.FontSize="14"/>
             </ToolBar>
             <StackPanel x:Name="info_title" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" 
                         TextBlock.FontSize="16" TextBlock.LineHeight="26"

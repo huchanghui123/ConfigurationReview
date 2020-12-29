@@ -173,7 +173,6 @@ namespace QotomReview
             {
                 OpenAudioClick(open_audio, new RoutedEventArgs());
             }
-            
         }
         //设备插拔改变函数
         private IntPtr DeveiceChanged(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
