@@ -122,6 +122,12 @@ namespace QotomReview
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            font_family.ItemsSource = Computer.LoadSysFontFamily();
+            font_family.SelectedIndex = 0;
+            string[] fontsizes = {"12", "13", "14", "15", "16", "17", "18", "19", "20"};
+            font_size.ItemsSource = fontsizes;
+            font_size.SelectedIndex = 3;
+
             portName.ItemsSource = SerialPort.GetPortNames();
             portName.SelectedIndex = 0;
             if(SerialPort.GetPortNames().Length < 1)
@@ -322,8 +328,8 @@ namespace QotomReview
                 if(boardType.Contains("Microsoft"))
                 {
                     video.FontWeight = FontWeights.Bold;
+                    os.Foreground = Brushes.Red;
                 }
-
                 if (compared && old_config != null)
                 {
                     try
@@ -791,6 +797,39 @@ namespace QotomReview
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             aw.ShowDialog();
+        }
+
+        private void Font_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Font_Click ... font_family:{0} font_size:{1}", 
+                font_family.SelectedItem.ToString(), font_size.SelectedItem.ToString());
+
+            //foreach (var children in info_title.Children)
+            //{
+            //    (children as TextBlock).FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+            //    (children as TextBlock).FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            //}
+
+            foreach (var children in os_info.Children)
+            {
+                (children as TextBlock).FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+                (children as TextBlock).FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            }
+
+            temperatureList.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+            temperatureList.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+
+            mem_List.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+            mem_List.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+
+            disk_List.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+            disk_List.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+
+            usb_list.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+            usb_list.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+
+            net_List.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
+            net_List.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
         }
     }
 }

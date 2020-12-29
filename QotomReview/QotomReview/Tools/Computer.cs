@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Management;
 using System.Net;
@@ -252,9 +253,18 @@ namespace QotomReview.Tools
                         if (m.Properties["Size"].Value != null)
                         {
                             name = m.Properties["Caption"].Value.ToString();
-                            type = m.Properties["InterfaceType"].Value.ToString();
+                            //type = m.Properties["InterfaceType"].Value.ToString();
                             disksize = Convert.ToDouble(m.Properties["Size"].Value);
                             size = (disksize / 1024 / 1024 / 1024).ToString("f1") + " GB";
+                            if(m.Properties["PNPDeviceID"].Value.ToString().ToUpper().Contains("_NVME"))
+                            {
+                                type = "NVMe";
+                            }
+                            else
+                            {
+                                type = "Sata";
+                            }
+                            //Console.WriteLine(m.Properties["PNPDeviceID"].Value);
                         }
                         disk_list.Add(new BaseData(name, type, size));
                     }
@@ -403,6 +413,19 @@ namespace QotomReview.Tools
         public static void Writeini(string group, string key, string value, string filepath)
         {
             WritePrivateProfileString(group, key, value, filepath);
+        }
+
+        //加载系统字体
+        public static List<String> LoadSysFontFamily()
+        {
+            List<String> fontList = new List<String>();
+            System.Drawing.Text.InstalledFontCollection fonts = 
+                new System.Drawing.Text.InstalledFontCollection();
+            foreach(FontFamily fontf in fonts.Families)
+            {
+                fontList.Add(fontf.Name);
+            }
+            return fontList;
         }
     }
 }

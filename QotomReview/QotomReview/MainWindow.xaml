@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview"
         mc:Ignorable="d"
-        Title="千度工控电脑简单测试软件 V1.02" Height="825" Width="930"
+        Title="千度工控电脑简单测试软件 V1.02" Height="815" Width="930"
         Closing="OnClosing" ResizeMode="CanMinimize" Loaded="Window_Loaded">
     <Window.Resources>
-        <Style TargetType="{x:Type TextBlock }" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <!--<Style TargetType="{x:Type TextBlock }">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="Height" Value="22"/>
-        </Style>
+        </Style>-->
         <Style TargetType="{x:Type TextBox }">
             <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
             <Setter Property="FontSize" Value="14"/>
@@ -28,9 +28,9 @@
         </Style>
 
         <Style TargetType="{x:Type ListViewItem}">
-            <Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
-            <Setter Property="FontSize" Value="12"/>
-            <!--<Setter Property="Background" Value="WhiteSmoke"/>-->
+            <!--<Setter Property="FontFamily" Value="楷体,Microsoft YaHei Regular"/>
+            <Setter Property="FontSize" Value="15"/>-->
+            <Setter Property="Height" Value="24"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Check}" Value="error">
                     <Setter Property="Foreground" Value="Red" />
@@ -65,114 +65,119 @@
                     </MenuItem>
                 </Menu>
                 <Separator />
+                <Menu Background="White" >
+                    <MenuItem Header="字体" Background="White" VerticalAlignment="Center" >
+                        <ComboBox x:Name="font_family" />
+                        <Separator />
+                        <ComboBox x:Name="font_size" />
+                        <Separator />
+                        <Button BorderThickness="0" Background="Transparent" Content="确认" HorizontalContentAlignment="Left" Click="Font_Click" />
+                    </MenuItem>
+                </Menu>
+                <Separator />
                 <Button Content="关于" Click="About_Click"/>
-                <!--<Separator />
-                        <Label>FontFamily:</Label>
-                        <ComboBox>
-                            <ComboBoxItem>微软雅黑</ComboBoxItem>
-                            <ComboBoxItem IsSelected="True">楷体</ComboBoxItem>
-                        </ComboBox>
-                        <Label>FontSize:</Label>
-                        <ComboBox>
-                            <ComboBoxItem>10</ComboBoxItem>
-                            <ComboBoxItem IsSelected="True">12</ComboBoxItem>
-                            <ComboBoxItem>14</ComboBoxItem>
-                            <ComboBoxItem>16</ComboBoxItem>
-                        </ComboBox>-->
             </ToolBar>
-            <StackPanel Margin="-5,0,0,0" Width="100" FlowDirection="RightToLeft" >
-                    <TextBlock Text=":系统版本" />
-                    <TextBlock Text=":系统类型" Margin="0,5,0,0"/>
-                    <TextBlock Text=":系统语言" Margin="0,5,0,0"/>
-                    <TextBlock Text=":处理器" Margin="0,5,0,0"/>
-                    <TextBlock Text=":显示适配器" Margin="0,5,0,0"/>
-                    <TextBlock Text=":BIOS版本" Margin="0,5,0,0"/>
-                    <TextBlock Text=":内存信息" Margin="0,5,0,0" />
-                    <TextBlock Text=":存储信息" Margin="0,60,0,0" />
-                    <TextBlock Text=":网络信息" Margin="0,75,0,0" />
-                    <TextBlock Text=":同步时钟" Margin="0,246.5,0,0" />
-                    <TextBlock Text=":计算机名" Margin="0,11,0,0"/>
-                </StackPanel>
+            <StackPanel x:Name="info_title" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" 
+                        TextBlock.FontSize="16" TextBlock.LineHeight="26"
+                        Margin="-5,1,0,0" Width="100" FlowDirection="RightToLeft" >
+                <TextBlock Text=":系统版本" />
+                <TextBlock Text=":系统类型" />
+                <TextBlock Text=":系统语言" />
+                <TextBlock Text=":处理器" />
+                <TextBlock Text=":显示适配器"/>
+                <TextBlock Text=":BIOS版本"/>
+                <TextBlock Text=":内存信息" Margin="0,5,0,0"/>
+                <TextBlock Text=":存储信息" Margin="0,55,0,0" />
+                <TextBlock Text=":网络信息" Margin="0,73,0,0" />
+                <TextBlock Text=":同步时钟" Margin="0,241,0,0" />
+                <TextBlock Text=":计算机名" Margin="0,3,0,0"/>
+            </StackPanel>
             <StackPanel Margin="5,0,0,0" Width="805" DockPanel.Dock="Top">
-                <StackPanel Orientation="Horizontal">
-                    <Border BorderBrush="Gray" BorderThickness="1">
-                        <StackPanel Width="480" HorizontalAlignment="Left" Margin="2,0,0,0">
-                            <TextBlock x:Name="os" Text="Loading..." />
-                            <TextBlock x:Name="os_type" Text="Loading..." Margin="0,5,0,0"/>
-                            <TextBlock x:Name="os_language" Text="Loading..." Margin="0,5,0,0"/>
-                            <TextBlock x:Name="cpu" Text="Loading..." Margin="0,5,0,0"/>
-                            <TextBlock x:Name="video" Text="Loading..." Margin="0,5,0,0"/>
-                            <TextBlock x:Name="bios" Text="Loading..." Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-                    <ListView x:Name="temperatureList" Height="160" Width="318" Margin="2,0,0,0"
-                              BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="描述" Width="110" DisplayMemberBinding="{Binding Path=Name}" />
-                                <GridViewColumn Header="当前值" Width="65" DisplayMemberBinding="{Binding Path=Value}" />
-                                <GridViewColumn Header="最小值" Width="65" DisplayMemberBinding="{Binding Path=MinValue}" />
-                                <GridViewColumn Header="最大值" Width="65" DisplayMemberBinding="{Binding Path=MaxValue}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel>
-                        <ListView x:Name="mem_List" Height="80" Width="484" HorizontalAlignment="Left" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                <StackPanel x:Name="info_panel" TextBlock.FontSize="15"
+                            TextBlock.FontFamily="楷体,Microsoft YaHei Regular" >
+                    <StackPanel Orientation="Horizontal">
+                        <Border BorderBrush="Gray" BorderThickness="1">
+                            <ScrollViewer Height="158" ScrollViewer.VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                                <ScrollViewer.Content>
+                                    <StackPanel x:Name="os_info" Width="480" TextBlock.LineHeight="26" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                        <TextBlock x:Name="os" Text="Loading..." />
+                                        <TextBlock x:Name="os_type" Text="Loading..." />
+                                        <TextBlock x:Name="os_language" Text="Loading..." />
+                                        <TextBlock x:Name="cpu" Text="Loading..." />
+                                        <TextBlock x:Name="video" Text="Loading..." />
+                                        <TextBlock x:Name="bios" Text="Loading..." />
+                                    </StackPanel>
+                                </ScrollViewer.Content>
+                            </ScrollViewer>
+                        </Border>
+                        <ListView x:Name="temperatureList" Height="160" Width="318" Margin="2,0,0,0"
+                              BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" FontSize="15">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="设备描述" Width="210" DisplayMemberBinding="{Binding Path=Name}" />
-                                    <GridViewColumn Header="频率" Width="90" DisplayMemberBinding="{Binding Path=Speed}" />
-                                    <GridViewColumn Header="类型" Width="70" DisplayMemberBinding="{Binding Path=Type}" />
-                                    <GridViewColumn Header="大小" Width="80" DisplayMemberBinding="{Binding Path=Size}" />
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                        <ListView x:Name="disk_List" Height="100" Width="484" HorizontalAlignment="Left" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="设备描述" Width="290" DisplayMemberBinding="{Binding Path=Name}" />
-                                    <GridViewColumn Header="类型" Width="70" DisplayMemberBinding="{Binding Path=Type}" />
-                                    <GridViewColumn Header="容量" Width="90" DisplayMemberBinding="{Binding Path=Size}" />
+                                    <GridViewColumn Header="描述" Width="110" DisplayMemberBinding="{Binding Path=Name}" />
+                                    <GridViewColumn Header="当前值" Width="65" DisplayMemberBinding="{Binding Path=Value}" />
+                                    <GridViewColumn Header="最小值" Width="65" DisplayMemberBinding="{Binding Path=MinValue}" />
+                                    <GridViewColumn Header="最大值" Width="65" DisplayMemberBinding="{Binding Path=MaxValue}" />
                                 </GridView>
                             </ListView.View>
                         </ListView>
                     </StackPanel>
-                    <ListView x:Name="usb_list" Height="180" Width="318"  Margin="2,0,0,0"
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel>
+                            <ListView x:Name="mem_List" Height="80" Width="484" HorizontalAlignment="Left" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="设备描述" Width="210" DisplayMemberBinding="{Binding Path=Name}" />
+                                        <GridViewColumn Header="频率" Width="90" DisplayMemberBinding="{Binding Path=Speed}" />
+                                        <GridViewColumn Header="类型" Width="70" DisplayMemberBinding="{Binding Path=Type}" />
+                                        <GridViewColumn Header="大小" Width="80" DisplayMemberBinding="{Binding Path=Size}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <ListView x:Name="disk_List" Height="100" Width="484" HorizontalAlignment="Left" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="设备描述" Width="290" DisplayMemberBinding="{Binding Path=Name}" />
+                                        <GridViewColumn Header="类型" Width="70" DisplayMemberBinding="{Binding Path=Type}" />
+                                        <GridViewColumn Header="容量" Width="90" DisplayMemberBinding="{Binding Path=Size}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </StackPanel>
+                        <ListView x:Name="usb_list" Height="180" Width="318"  Margin="2,0,0,0"
                               BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4" >
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="USB设备描述" Width="220" DisplayMemberBinding="{Binding Path=Name}" />
+                                    <GridViewColumn Header="容量" Width="80" DisplayMemberBinding="{Binding Path=Size}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                    <ListView x:Name="net_List" Height="260" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="USB设备描述" Width="220" DisplayMemberBinding="{Binding Path=Name}" />
-                                <GridViewColumn Header="容量" Width="80" DisplayMemberBinding="{Binding Path=Size}" />
+                                <GridViewColumn Header="适配器描述" Width="335" DisplayMemberBinding="{Binding Path=Adapter}" />
+                                <GridViewColumn Header="MAC地址" Width="160" DisplayMemberBinding="{Binding Path=Mac}" />
+                                <GridViewColumn Header="IP地址" Width="140" DisplayMemberBinding="{Binding Path=Ip}" />
+                                <GridViewColumn Header="连接状态" Width="70" DisplayMemberBinding="{Binding Path=Status}" />
+                                <GridViewColumn Header="网卡类型" Width="90" DisplayMemberBinding="{Binding Path=Type}" />
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </StackPanel>
 
-                <ListView x:Name="net_List" Height="260" BorderThickness="1,1,1,1" BorderBrush="#FFC8CCD4">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="适配器描述" Width="335" DisplayMemberBinding="{Binding Path=Adapter}" />
-                            <GridViewColumn Header="MAC地址" Width="160" DisplayMemberBinding="{Binding Path=Mac}" />
-                            <GridViewColumn Header="IP地址" Width="140" DisplayMemberBinding="{Binding Path=Ip}" />
-                            <GridViewColumn Header="连接状态" Width="70" DisplayMemberBinding="{Binding Path=Status}" />
-                            <GridViewColumn Header="网卡类型" Width="90" DisplayMemberBinding="{Binding Path=Type}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
-
                 <StackPanel Orientation="Horizontal">
-                    <StackPanel Width="550">
+                    <StackPanel Width="550" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" 
+                        TextBlock.FontSize="15">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
-                            <TextBlock Text="服务器地址:" />
+                            <TextBlock Text="NTP地址:" Width="70"/>
                             <TextBox x:Name="ntp_server" Text="time.windows.com" Width="150" Margin="5,0,0,0"/>
                             <Button x:Name="update_time" Content="同步" Width="50" Click="UpdateTimeClick" Margin="20,0,0,0"/>
                             <TextBlock x:Name="local_time" Text="本地时间" Margin="20,0,0,0" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
-                            <TextBlock Text="计算机名称:" />
+                            <TextBlock Text="计算机名:" Width="70"/>
                             <TextBox x:Name="input_name" Text="Loading..." Width="150" Margin="5,0,0,0"/>
                             <Button x:Name="generate_name" Content="生成" Click="GenerateNameClick" Width="50" Margin="20,0,0,0"/>
                             <Button x:Name="update_name" Content="更新" Click="UpdateNameClick" Width="50" Margin="20,0,0,0"/>
@@ -202,10 +207,10 @@
                 <!-- 串口 -->
                 <Border BorderBrush="Gray" BorderThickness="1" Margin="0,5">
                     <StackPanel Orientation="Horizontal" Height="55">
-                        <StackPanel>
                             <!--串口配置项-->
-                            <StackPanel Width="550" HorizontalAlignment="Left">
-                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <StackPanel TextBlock.FontFamily="楷体,Microsoft YaHei Regular" 
+                            TextBlock.FontSize="15" Width="550" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <TextBlock Text="选择" Width="65"/>
                                     <TextBlock Text="速度" Width="70" Margin="10,0,0,0"/>
                                     <TextBlock Text="数据位" Width="50" Margin="10,0,0,0"/>
@@ -214,7 +219,7 @@
                                     <TextBlock Text="握手方式" Width="80" Margin="10,0,0,0"/>
                                     <CheckBox x:Name="rtsCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal" >
+                                <StackPanel Orientation="Horizontal" Margin="0,5" >
                                     <ComboBox x:Name="portName" Text="COM1" Width="65"/>
                                     <ComboBox x:Name="baudRate" Text="115200" IsEditable="True" Width="70" Margin="10,0,0,0"/>
                                     <ComboBox x:Name="dataBits" Text="8" IsEditable="True" Width="50" Margin="10,0,0,0"/>
@@ -223,7 +228,6 @@
                                     <ComboBox x:Name="handShake" Text="1" Width="80" Margin="10,0,0,0"/>
                                     <CheckBox x:Name="dtrCheck" IsChecked="True" IsEnabled="False" Content="RTS" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
                                 </StackPanel>
-                            </StackPanel>
                         </StackPanel>
                         
                         <StackPanel Width="255">
@@ -236,10 +240,10 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                
             </StackPanel>
             <StatusBar DockPanel.Dock="Bottom" Background="Transparent">
-                <TextBlock x:Name="status_info" Text="加载配置..." Margin="10,0,0,0"/>
+                <TextBlock x:Name="status_info" Text="" TextBlock.FontFamily="楷体,Microsoft YaHei Regular" 
+                        TextBlock.FontSize="15" Margin="10,0,0,0"/>
             </StatusBar>
         </DockPanel>
         
