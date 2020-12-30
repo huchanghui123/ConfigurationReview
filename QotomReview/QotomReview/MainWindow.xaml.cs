@@ -38,9 +38,6 @@ namespace QotomReview
             = new ObservableCollection<SensorData>();
 
         private static string newName = String.Empty;
-        private Thread it;
-        private Thread nt;
-        private Thread read;
         private bool compared = true;
         private ComWindow comWindow;
         private bool comIsStartUp = false;
@@ -60,31 +57,21 @@ namespace QotomReview
         {
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-            it = new Thread(InfoThread)
-            {
-                IsBackground = true
-            };
-            //it.Start();
-
-            nt = new Thread(NetThread)
-            {
-                IsBackground = true
-            };
-            //nt.Start();
             
             if(!File.Exists(iniPath))
             {
                 //Compare:0不对比，1对比；startup:0不启动，1启动
-                Computer.Writeini("Compare", "Compare", "1",iniPath);
-                Computer.Writeini("COM","startup", "0",iniPath);
-                Computer.Writeini("Audio","startup", "0",iniPath);
+                Computer.Writeini("Compare", "Value", "1",iniPath);
+                Computer.Writeini("COM", "Value", "0",iniPath);
+                Computer.Writeini("Audio", "Value", "0",iniPath);
+                Computer.Writeini("FontFamily", "Value", "楷体,Arial", iniPath);
+                Computer.Writeini("FontSize", "Value", "15",iniPath);
             }
             else
             {
-                string compareValue = Computer.Readini("Compare", "Compare", "1", iniPath);
-                string comValue = Computer.Readini("COM", "startup", "0", iniPath);
-                string audioValue = Computer.Readini("Audio", "startup", "0", iniPath);
+                string compareValue = Computer.Readini("Compare", "Value", "1", iniPath);
+                string comValue = Computer.Readini("COM", "Value", "0", iniPath);
+                string audioValue = Computer.Readini("Audio", "Value", "0", iniPath);
                 compared = Convert.ToInt16(compareValue) == 0 ? false : true;
                 comIsStartUp = Convert.ToInt16(comValue) == 0 ? false : true;
                 audioIsStartUp = Convert.ToInt16(audioValue) == 0 ? false : true;
@@ -106,27 +93,43 @@ namespace QotomReview
             }
             if (compared)
             {
-                read = new Thread(ReadConfig)
-                {
-                    IsBackground = true
-                };
-                read.Start();
+                new Thread(()=> ReadConfig()).Start();
             }
             else
             {
-                it.Start();
-                nt.Start();
+                new Thread(() => InfoThread()).Start();
+                new Thread(() => NetThread()).Start();
             }
 
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            font_family.ItemsSource = Computer.LoadSysFontFamily();
-            font_family.SelectedIndex = 0;
-            string[] fontsizes = {"12", "13", "14", "15", "16", "17", "18", "19", "20"};
+            string[] fontsizes = { "12", "13", "14", "15", "16", "17", "18", "19", "20" };
+            List<String> fontFamilyList = Computer.LoadSysFontFamily();
+            font_family.ItemsSource = fontFamilyList;
             font_size.ItemsSource = fontsizes;
-            font_size.SelectedIndex = 3;
+
+            string fontFamily = Computer.Readini("FontFamily", "Value", "楷体,Arial", iniPath);
+            string fontSize = Computer.Readini("FontSize", "Value", "15", iniPath);
+
+            int family_index = fontFamilyList.IndexOf(fontFamily);
+            int font_index = fontsizes.ToList().IndexOf(fontSize);
+            if(family_index < 0)
+            {
+                int index = fontFamilyList.IndexOf("楷体");
+                if(index < 0)
+                {
+                    index = fontFamilyList.IndexOf("Arial");
+                }
+                font_family.SelectedIndex = index;
+            }
+            else
+            {
+                font_family.SelectedIndex = family_index;
+            }
+            
+            font_size.SelectedIndex = font_index;
 
             portName.ItemsSource = SerialPort.GetPortNames();
             portName.SelectedIndex = 0;
@@ -238,17 +241,8 @@ namespace QotomReview
                 compared = false;
             }
 
-            it = new Thread(InfoThread)
-            {
-                IsBackground = true
-            };
-            it.Start();
-            
-            nt = new Thread(NetThread)
-            {
-                IsBackground = true
-            };
-            nt.Start();
+            new Thread(() => InfoThread()).Start();
+            new Thread(() => NetThread()).Start();
         }
 
         private void SystemTimeTimerTick(object sender, EventArgs e)
@@ -524,11 +518,7 @@ namespace QotomReview
 
         private void UpdateTimeClick(object sender, RoutedEventArgs e)
         {
-            Thread twt = new Thread(TimeWorkThread)
-            {
-                IsBackground = true
-            };
-            twt.Start();
+            new Thread(() => TimeWorkThread()).Start();
         }
 
         void TimeWorkThread()
@@ -701,7 +691,7 @@ namespace QotomReview
             //清空配置，重新读取
             status_info.Text = "读取中...";
             old_config = null;
-            string compareValue = Computer.Readini("Compare", "Compare", "1", iniPath);
+            string compareValue = Computer.Readini("Compare", "Value", "1", iniPath);
             compared = Convert.ToInt16(compareValue) == 0 ? false : true;
             ReadConfig();
         }
@@ -757,11 +747,11 @@ namespace QotomReview
         {
             if(audio_start.IsChecked == false)
             {
-                Computer.Writeini("Audio", "startup", "0", iniPath);
+                Computer.Writeini("Audio", "Value", "0", iniPath);
             }
             else
             {
-                Computer.Writeini("Audio", "startup", "1", iniPath);
+                Computer.Writeini("Audio", "Value", "1", iniPath);
             }
         }
 
@@ -769,11 +759,11 @@ namespace QotomReview
         {
             if (com_start.IsChecked == false)
             {
-                Computer.Writeini("COM", "startup", "0", iniPath);
+                Computer.Writeini("COM", "Value", "0", iniPath);
             }
             else
             {
-                Computer.Writeini("COM", "startup", "1", iniPath);
+                Computer.Writeini("COM", "Value", "1", iniPath);
             }
         }
 
@@ -781,11 +771,11 @@ namespace QotomReview
         {
             if(check.IsChecked == false)
             {
-                Computer.Writeini("Compare", "Compare", "0", iniPath);
+                Computer.Writeini("Compare", "Value", "0", iniPath);
             }
             else
             {
-                Computer.Writeini("Compare", "Compare", "1", iniPath);
+                Computer.Writeini("Compare", "Value", "1", iniPath);
             }
         }
 
@@ -798,37 +788,65 @@ namespace QotomReview
             aw.ShowDialog();
         }
 
-        private void Font_Click(object sender, RoutedEventArgs e)
+        private void Font_family_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Console.WriteLine("Font_Click ... font_family:{0} font_size:{1}", 
-                font_family.SelectedItem.ToString(), font_size.SelectedItem.ToString());
+            string fontfamily = font_family.SelectedItem.ToString();
+            Console.WriteLine("font_family:{0}", fontfamily);
+            
+            foreach (var children in os_info.Children)
+            {
+                (children as TextBlock).FontFamily = new FontFamily(fontfamily);
+            }
 
-            //foreach (var children in info_title.Children)
-            //{
-            //    (children as TextBlock).FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-            //    (children as TextBlock).FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
-            //}
+            temperatureList.FontFamily = new FontFamily(fontfamily);
+
+            mem_List.FontFamily = new FontFamily(fontfamily);
+
+            disk_List.FontFamily = new FontFamily(fontfamily);
+
+            usb_list.FontFamily = new FontFamily(fontfamily);
+
+            net_List.FontFamily = new FontFamily(fontfamily);
+
+            Computer.Writeini("FontFamily", "Value", fontfamily, iniPath);
+        }
+
+        private void Font_size_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string fontsize = font_size.SelectedItem.ToString();
+            Console.WriteLine("font_size:{0}", fontsize);
 
             foreach (var children in os_info.Children)
             {
-                (children as TextBlock).FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-                (children as TextBlock).FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+                (children as TextBlock).FontSize = Convert.ToDouble(fontsize);
             }
 
-            temperatureList.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-            temperatureList.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            temperatureList.FontSize = Convert.ToDouble(fontsize);
 
-            mem_List.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-            mem_List.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            mem_List.FontSize = Convert.ToDouble(fontsize);
 
-            disk_List.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-            disk_List.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            disk_List.FontSize = Convert.ToDouble(fontsize);
 
-            usb_list.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-            usb_list.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            usb_list.FontSize = Convert.ToDouble(fontsize);
 
-            net_List.FontFamily = new FontFamily(font_family.SelectedItem.ToString());
-            net_List.FontSize = Convert.ToDouble(font_size.SelectedItem.ToString());
+            net_List.FontSize = Convert.ToDouble(fontsize);
+            
+            Computer.Writeini("FontSize", "Value", fontsize, iniPath);
+        }
+
+        //恢复默认设置
+        private void ResetConfigClick(object sender, RoutedEventArgs e)
+        {
+            Computer.Writeini("Compare", "Value", "1", iniPath);
+            Computer.Writeini("COM", "Value", "0", iniPath);
+            Computer.Writeini("Audio", "Value", "0", iniPath);
+            Computer.Writeini("FontFamily", "Value", "楷体,Arial", iniPath);
+            Computer.Writeini("FontSize", "Value", "15", iniPath);
+            check.IsChecked = true;
+            audio_start.IsChecked = false;
+            com_start.IsChecked = false;
+
+            status_info.Text = "配置已恢复默认!";
         }
     }
 }
