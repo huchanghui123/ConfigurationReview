@@ -60,12 +60,7 @@ namespace QotomReview
             
             if(!File.Exists(iniPath))
             {
-                //Compare:0不对比，1对比；startup:0不启动，1启动
-                Computer.Writeini("Compare", "Value", "1",iniPath);
-                Computer.Writeini("COM", "Value", "0",iniPath);
-                Computer.Writeini("Audio", "Value", "0",iniPath);
-                Computer.Writeini("FontFamily", "Value", "楷体,Arial", iniPath);
-                Computer.Writeini("FontSize", "Value", "15",iniPath);
+                InitConfig();
             }
             else
             {
@@ -105,6 +100,9 @@ namespace QotomReview
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            string ntp = Computer.Readini("NTP", "Value", "time.windows.com", iniPath);
+            ntp_server.Text = ntp;
+
             string[] fontsizes = { "12", "13", "14", "15", "16", "17", "18", "19", "20" };
             List<String> fontFamilyList = Computer.LoadSysFontFamily();
             font_family.ItemsSource = fontFamilyList;
@@ -194,7 +192,7 @@ namespace QotomReview
                             if (drive.DriveType == DriveType.Removable)
                             {
                                 //Console.WriteLine(string.Format("U盘已插入，盘符是" + drive.Name.ToString()));
-                                Reload_Click(reload, new RoutedEventArgs());
+                                new Thread(() => UpdateUSBInfo()).Start();
                                 break;
                             }
                         }
@@ -202,13 +200,12 @@ namespace QotomReview
                     //设备卸载事件
                     case DBT_DEVICEREMOVECOMPLETE:
                         //Console.WriteLine("检测到设备卸载");
-                        Reload_Click(reload, new RoutedEventArgs());
+                        new Thread(() => UpdateUSBInfo()).Start();
                         break;
                 }
             }
             return IntPtr.Zero;
         }
-
 
         void ReadConfig()
         {
@@ -414,14 +411,15 @@ namespace QotomReview
                 }
             }
             //USB信息获取
-            List<BaseData> usbList = Computer.GetUSBInfo();
-            //if (usbList != null && usbList.Count > 0)
-            //{
-                this.Dispatcher.Invoke((Action)delegate ()
-                {
-                    usb_list.ItemsSource = usbList;
-                });
-            //}
+            //List<BaseData> usbList = Computer.GetUSBInfo();
+            ////if (usbList != null && usbList.Count > 0)
+            ////{
+            //    this.Dispatcher.Invoke((Action)delegate ()
+            //    {
+            //        usb_list.ItemsSource = usbList;
+            //    });
+            ////}
+            UpdateUSBInfo();
 
             //磁盘信息获取
             List<BaseData> diskList = Computer.GetDiskInfo();
@@ -514,6 +512,15 @@ namespace QotomReview
                     });
                 }
             }
+        }
+
+        void UpdateUSBInfo()
+        {
+            List<BaseData> usbList = Computer.GetUSBInfo();
+            this.Dispatcher.Invoke((Action)delegate ()
+            {
+                usb_list.ItemsSource = usbList;
+            });
         }
 
         private void UpdateTimeClick(object sender, RoutedEventArgs e)
@@ -693,6 +700,7 @@ namespace QotomReview
             old_config = null;
             string compareValue = Computer.Readini("Compare", "Value", "1", iniPath);
             compared = Convert.ToInt16(compareValue) == 0 ? false : true;
+            ntp_server.Text = Computer.Readini("NTP", "Value", "time.windows.com", iniPath);
             ReadConfig();
         }
 
@@ -834,14 +842,21 @@ namespace QotomReview
             Computer.Writeini("FontSize", "Value", fontsize, iniPath);
         }
 
-        //恢复默认设置
-        private void ResetConfigClick(object sender, RoutedEventArgs e)
+        private void InitConfig()
         {
+            //Compare:0不对比，1对比；startup:0不启动，1启动
             Computer.Writeini("Compare", "Value", "1", iniPath);
             Computer.Writeini("COM", "Value", "0", iniPath);
             Computer.Writeini("Audio", "Value", "0", iniPath);
             Computer.Writeini("FontFamily", "Value", "楷体,Arial", iniPath);
             Computer.Writeini("FontSize", "Value", "15", iniPath);
+            Computer.Writeini("NTP", "Value", "time.windows.com", iniPath);
+        }
+
+        //恢复默认设置
+        private void ResetConfigClick(object sender, RoutedEventArgs e)
+        {
+            InitConfig();
             check.IsChecked = true;
             audio_start.IsChecked = false;
             com_start.IsChecked = false;
