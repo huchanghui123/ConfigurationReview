@@ -53,12 +53,14 @@ namespace QotomReview
         static readonly string configPath = System.AppDomain.CurrentDomain.BaseDirectory + "qotom_config.xml";
         static readonly string iniPath = System.AppDomain.CurrentDomain.BaseDirectory + "qotom_review.ini";
 
+        private string _currentLan = "中文";
+
         public MainWindow()
         {
             InitializeComponent();
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            
-            if(!File.Exists(iniPath))
+
+            if (!File.Exists(iniPath))
             {
                 InitConfig();
             }
@@ -862,6 +864,32 @@ namespace QotomReview
             com_start.IsChecked = false;
 
             status_info.Text = "配置已恢复默认!";
+        }
+
+        private void Lang_zh_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine(lang_zh.Header.ToString());
+            if (_currentLan == lang_zh.Header.ToString())
+            {
+                return;
+            }
+            ResourceDictionary dict = new ResourceDictionary();
+            dict.Source = new Uri(@"Resources\Language\ZH.xaml", UriKind.Relative);
+            Application.Current.Resources.MergedDictionaries[0] = dict;
+            _currentLan = "中文";
+        }
+
+        private void Lang_en_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine(lang_en.Header.ToString());
+            if (_currentLan == lang_en.Header.ToString())
+            {
+                return;
+            }
+            ResourceDictionary dict = new ResourceDictionary();
+            dict.Source = new Uri(@"Resources\Language\EN.xaml", UriKind.Relative);
+            Application.Current.Resources.MergedDictionaries[0] = dict;
+            _currentLan = "English";
         }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QotomReview"
         mc:Ignorable="d"
-        Title="千度工控电脑简单测试软件 V1.02" Height="815" Width="930"
+        Title="{DynamicResource Greeting}" Height="815" Width="930"
         Closing="OnClosing" ResizeMode="CanMinimize" Loaded="Window_Loaded">
     <Window.Resources>
         <Style TargetType="{x:Type TextBox }">
@@ -78,6 +78,14 @@
                         <ComboBox x:Name="font_size" SelectionChanged="Font_size_SelectionChanged"/>
                         <!--<Separator />
                         <MenuItem Header="确认" Click="Font_Click" />-->
+                    </MenuItem>
+                </Menu>
+                <Separator />
+                <Menu Background="White" TextBlock.FontFamily="楷体,Arial" TextBlock.FontSize="14">
+                    <MenuItem Header="语言" Background="White" VerticalAlignment="Center" >
+                        <MenuItem Header="中文" x:Name="lang_zh" Click="Lang_zh_Click"/>
+                        <Separator />
+                        <MenuItem Header="English" x:Name="lang_en" Click="Lang_en_Click"/>
                     </MenuItem>
                 </Menu>
                 <Separator />
@@ -240,8 +248,8 @@
                             <Canvas Margin="30,0,0,0">
                                 <Button x:Name="open_com" Content="打开端口" Click="OpenSerialPort" Width="80" Canvas.Top="5"/>
                                 <Button x:Name="open_all_com" Content="全部打开" Click="OpenAllSerialPort" Width="80" Canvas.Top="30"/>
-                                <Button x:Name="open_audio" Content="声音面板" Click="OpenAudioClick" Width="80" Canvas.Left="110" Canvas.Top="5"/>
-                                <Button x:Name="open_systeminfo" Content="系统信息" Click="OpenSysteminfoClick" Width="80" Canvas.Left="110" Canvas.Top="30"/>
+                                <Button x:Name="open_audio" Content="声音面板" Click="OpenAudioClick" Width="80" Canvas.Left="129" Canvas.Top="5"/>
+                                <Button x:Name="open_systeminfo" Content="系统信息" Click="OpenSysteminfoClick" Width="80" Canvas.Left="129" Canvas.Top="30"/>
                             </Canvas>
                         </StackPanel>
                     </StackPanel>
